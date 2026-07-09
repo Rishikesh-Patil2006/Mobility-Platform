@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  VENDOR
+  SUPER_ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  PENDING
+  SUSPENDED
+  BLOCKED
+  REJECTED
+}
+
+enum VendorApprovalStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  SUSPENDED
+  BLOCKED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+}
+
+enum NotificationType {
+  VENDOR_REGISTRATION
+  VENDOR_APPROVAL
+  COMPLAINT
+  DOCUMENT_EXPIRY
+  LEAD
+  SYSTEM
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  phone         String?        @unique
+  password      String
+  role          UserRole
+  status        AccountStatus  @default(PENDING)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  customerProfile CustomerProfile?
+  vendorProfile   VendorProfile?
+  adminProfile    AdminProfile?
+  refreshTokens   RefreshToken[]
+  notifications   Notification[]
+}
+
+model CustomerProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName String
+  lastName  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VendorProfile {
+  id             String               @id @default(uuid())
+  userId         String               @unique
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName   String
+  ownerName      String
+  approvalStatus VendorApprovalStatus @default(DRAFT)
+  address        String?
+  avatar         String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+}
+
+model AdminProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model ServiceCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FileAsset {
+  id           String    @id @default(uuid())
+  publicId     String    @unique
+  url          String
+  resourceType MediaType
+  uploadedById String
+  createdAt    DateTime  @default(now())
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  data      Json?
+  createdAt DateTime         @default(now())
+}

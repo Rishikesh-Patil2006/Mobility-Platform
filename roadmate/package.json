@@ -1,0 +1,18 @@
+{
+  "name": "roadmate",
+  "version": "1.0.0",
+  "description": "Roadmate Monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "server"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=server",
+    "dev:customer": "npm run start --workspace=customer-app",
+    "dev:vendor": "npm run start --workspace=vendor-app",
+    "dev:admin": "npm run dev --workspace=admin-web",
+    "db:migrate": "npm run prisma:migrate --workspace=server",
+    "db:seed": "npm run prisma:seed --workspace=server"
+  }
+}

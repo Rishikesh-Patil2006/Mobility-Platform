@@ -1,0 +1,31 @@
+{
+  "name": "roadmate-server",
+  "version": "1.0.0",
+  "description": "Roadmate Backend Server",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:generate": "npx prisma generate",
+    "prisma:seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "firebase-admin": "^11.10.1",
+    "helmet": "^7.0.0",
+    "jsonwebtoken": "^9.0.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "prisma": "^5.0.0"
+  }
+}
