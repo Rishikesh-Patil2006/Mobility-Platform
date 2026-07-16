@@ -1,0 +1,22 @@
+const createExpoWebpackConfigAsync = require('@expo/webpack-config');
+const path = require('path');
+
+module.exports = async function (env, argv) {
+  // Pass explicit project root configuration
+  const config = await createExpoWebpackConfigAsync(
+    {
+      ...env,
+      projectRoot: env.projectRoot || path.resolve(__dirname),
+    },
+    argv
+  );
+
+  // Fix: Force define the entry array if the monorepo resolver fails to locate it
+  if (!config.entry || (Array.isArray(config.entry) && config.entry.length === 0) || Object.keys(config.entry).length === 0) {
+    config.entry = {
+      app: [path.resolve(__dirname, 'index.js')],
+    };
+  }
+
+  return config;
+};

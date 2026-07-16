@@ -1,0 +1,268 @@
+Create a complete clickable mobile app prototype called MoveMate Vendor Business Manager.
+
+Theme:
+Blue and white
+Modern mobile UI
+Width 390px
+Rounded cards
+Soft shadows
+Professional dashboard style
+All screens must be separate
+All buttons, cards, tabs, back buttons, call buttons, WhatsApp buttons and direction buttons must be clickable.
+
+Create this full flow without missing any step:
+
+SCREEN 1: Vendor Landing Page
+Show app logo, title MoveMate Vendor, subtitle “Grow your mobility business with us”.
+Buttons:
+Login
+Register as Vendor
+
+Login click should open Vendor Login screen.
+Register click should open Vendor Registration screen.
+
+SCREEN 2: Vendor Login
+Fields:
+Mobile Number / Email
+Password
+Login Button
+OTP Login option
+Forgot Password
+Back button
+
+Login success should open Main Dashboard.
+
+SCREEN 3: Vendor Registration
+Title: Vendor Registration
+Step indicator: 1 Register, 2 OTP, 3 Profile, 4 Docs, 5 Verify, 6 Finish
+Fields:
+Owner Name
+Mobile Number
+Email
+Select Business Category
+Options:
+Car Wash
+Garage
+Denting and Painting
+Service Center
+PUC
+Showroom
+Towing
+Button: Continue
+
+Continue click should open OTP Verification screen.
+
+SCREEN 4: OTP Verification
+Title: OTP Verification
+Show text: Enter 6 digit OTP sent to mobile number.
+OTP input boxes
+Resend OTP
+Verify & Continue button
+
+Verify button should open Business Profile screen.
+
+SCREEN 5: Business Profile
+Title: Complete Your Business Profile
+Fields:
+Upload Shop Image
+Business Type
+Shop Name
+Shop Address
+State
+City
+Location
+Services Offered
+About Business
+Button: Save & Continue
+
+Save button should open Document Verification screen.
+
+SCREEN 6: Document Verification
+Title: Upload Documents
+Upload fields:
+Aadhaar Card Front & Back
+PAN Card
+GST Certificate
+Shop License
+Button: Submit for Verification
+
+Submit button should open Admin Verification screen.
+
+SCREEN 7: Admin Verification
+Title: Admin Verification
+Show status card:
+Your application is under review.
+Our team is verifying your business documents and profile details.
+Button: Check Status
+
+Check Status button should open Account Approved screen.
+
+SCREEN 8: Account Approved
+Title: Congratulations
+Message:
+Your account has been approved successfully.
+Account ID
+Verified Badge
+Button: Go to Dashboard
+
+Go to Dashboard should open Main Dashboard.
+
+SCREEN 9: Main Dashboard
+Create separate dashboard style for these business types:
+Garage
+Car Wash
+PUC Center
+Service Center
+Towing Service
+
+Dashboard must include:
+Header with location Jalgaon, notification icon, profile icon
+Welcome banner
+Search bar
+Business card
+Edit Business button
+Visited Customers / Visitors button
+Recent Activity section
+Bottom Navigation:
+Home
+Listings
+Manage
+Profile
+
+Edit Business click should open Edit Business Dashboard.
+Visitors click should open Visitor Details.
+Profile click should open Profile Screen.
+
+SCREEN 10: Edit Business Dashboard
+Title: Edit Business
+Show cards:
+Add Photos/Videos
+Business Name
+Contact Details
+Business Timings
+Business Categories
+Social Media
+
+Each card must be clickable and open its own screen.
+
+SCREEN 11: Add Photos/Videos
+Upload Photos
+Upload Videos
+Gallery Preview
+Save & Continue button
+Back button
+
+SCREEN 12: Business Name Edit
+Field: Business Name
+Verified Service Provider badge
+Save & Continue button
+Back button
+
+SCREEN 13: Contact Details Edit
+Fields:
+Contact Person Name
+Designation
+Mobile Number
+WhatsApp Number
+Email
+Add Another Contact Person
+Save & Continue button
+
+SCREEN 14: Business Timings Edit
+Set Universal Schedule
+Apply same timings to all days
+Open Time
+Close Time
+Add Another Time Slot
+Save & Continue button
+
+SCREEN 15: Business Categories Edit
+Select Services
+Show multiple selectable service chips:
+Car Repair
+Bike Service
+Oil Change
+Engine Repair
+Battery Service
+Tyre Service
+PUC
+Car Wash
+Denting and Painting
+Towing
+Save & Continue button
+
+SCREEN 16: Social Media Edit
+Fields:
+Facebook URL
+Instagram URL
+WhatsApp Link
+YouTube URL
+Website URL
+Save & Continue button
+
+SCREEN 17: Visitor Details
+Show visitor list cards:
+Visitor ID
+Name
+Phone Number
+Vehicle Number
+Service Type
+Date
+Arrival Time
+Status
+View Details button
+Call button
+WhatsApp button
+
+View Details should open Full Visitor Profile.
+
+SCREEN 18: Full Visitor Profile
+Show:
+Visitor photo avatar
+Name
+Visitor ID
+Status
+Mobile Number
+Vehicle Number
+Vehicle Type
+Service Interested
+Date
+Time
+Notes
+Call button
+WhatsApp button
+Back button
+
+SCREEN 19: Profile Screen
+Show:
+Business Name
+Owner Name
+Rating
+Business Details
+Mobile Number
+Email
+Location
+Category
+Edit Profile button
+Logout button
+
+SCREEN 20: Towing Order Screen
+For Towing business dashboard, show active order card.
+Order details:
+Customer Name
+Phone Number
+GPS Location
+Service Type
+Vehicle Details
+Distance
+Buttons:
+Accept Order
+Call Customer
+WhatsApp
+View GPS Location
+
+All screens must have working navigation.
+Do not show all screens on one page.
+Every main button should open the correct next screen.
+Use Jalgaon, Maharashtra data only.
+Make the UI clean, professional and mobile friendly.
