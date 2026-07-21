@@ -14,11 +14,17 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
-config.resolver.disableHierarchicalLookup = true;
+config.resolver.disableHierarchicalLookup = false;
 
-config.resolver.extraNodeModules = {
-  '@babel/runtime': path.resolve(workspaceRoot, 'node_modules/@babel/runtime'),
-};
+config.resolver.extraNodeModules = new Proxy({}, {
+  get: (target, name) => {
+    try {
+      return path.resolve(projectRoot, 'node_modules', name);
+    } catch {
+      return path.resolve(workspaceRoot, 'node_modules', name);
+    }
+  }
+});
 
 config.server = {
   ...config.server,
