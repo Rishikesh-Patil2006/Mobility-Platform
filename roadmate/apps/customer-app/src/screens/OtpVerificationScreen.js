@@ -209,7 +209,17 @@ export default function OtpVerificationScreen({ route, navigation }) {
         <Animated.View style={[styles.successButtonWrapper, { opacity: successOpacity }]}>
           <TouchableOpacity
             style={styles.dashboardButton}
-            onPress={() => navigation.replace('Main')}
+            onPress={() => {
+              const parent = navigation.getParent();
+              if (parent) {
+                parent.reset({
+                  index: 0,
+                  routes: [{ name: 'Main' }],
+                });
+              } else {
+                navigation.navigate('Main');
+              }
+            }}
             activeOpacity={0.85}
           >
             <Text style={styles.dashboardButtonText}>Go To Dashboard →</Text>

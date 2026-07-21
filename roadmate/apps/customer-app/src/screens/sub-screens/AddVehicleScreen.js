@@ -1,214 +1,203 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Animated, ActivityIndicator, Dimensions } from 'react-native';
+// roadmate/apps/customer-app/src/screens/sub-screens/AddVehicleScreen.js
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  TextInput, 
+  ScrollView, 
+  ActivityIndicator, 
+  Dimensions, 
+  Image 
+} from 'react-native';
+import { 
+  ProgressStepper, 
+  BrandDropdown, 
+  ImageUploader,
+  VehicleReviewCard,
+  VehicleInfoLoader
+} from '../../components/VehicleComponents';
+import { fetchVehicleInfo, validateRegistration, parseVehicleResponse } from '../../services/vehicleInfoService';
+import { validateVehicle } from '../../services/vehicleService';
+import { getVehicleCategory } from '../../utils/vehicleUtils';
 
 const { width } = Dimensions.get('window');
 
-// Data maps matching the Figma UI logic
-const brands = {
-  car: ['Honda', 'Hyundai', 'Maruti Suzuki', 'Tata', 'Toyota', 'Kia', 'MG', 'Volkswagen'],
-  bike: ['Hero', 'Honda', 'Bajaj', 'Royal Enfield', 'TVS', 'Yamaha', 'KTM'],
-  scooty: ['Honda', 'TVS', 'Hero', 'Yamaha', 'Suzuki'],
-  ev: ['Tata', 'Hyundai', 'MG', 'Ola', 'Ather', 'Bounce'],
-};
+export default function AddVehicleScreen({ vehicles = [], vehicle, initialStep = 1, onBack, onSave }) {
+  const isEditMode = !!vehicle;
 
-const fuels = {
-  car: ['Petrol', 'Diesel', 'CNG', 'Electric'],
-  bike: ['Petrol'],
-  scooty: ['Petrol'],
-  ev: ['Electric'],
-};
+  // Step state
+  const [step, setStep] = useState(initialStep);
 
-const vehicleTypes = [
-  { id: 'car', label: 'Car', emoji: '🚗' },
-  { id: 'bike', label: 'Bike', emoji: '🏍️' },
-  { id: 'scooty', label: 'Scooty', emoji: '🛵' },
-  { id: 'ev', label: 'EV', emoji: '⚡' },
-];
-
-const docEntries = [
-  {
-    key: 'puc',
-    label: 'PUC Certificate',
-    emoji: '🟢',
-    connectLabel: 'Connect Parivahan',
-    color: '#22C55E',
-    bg: '#F0FDF4',
-    fields: ['PUC Number', 'Issue Date', 'Expiry Date', 'Testing Center'],
-  },
-  {
-    key: 'rc',
-    label: 'RC Book',
-    emoji: '🔵',
-    connectLabel: 'Connect DigiLocker',
-    color: '#2563EB',
-    bg: '#EFF6FF',
-    fields: ['Registration No.', 'Registration Date', 'Validity', 'RTO Office'],
-  },
-  {
-    key: 'driving-license',
-    label: 'Driving License',
-    emoji: '🟣',
-    connectLabel: 'Connect DigiLocker',
-    color: '#8B5CF6',
-    bg: '#F5F3FF',
-    fields: ['License Number', 'Issue Date', 'Expiry Date', 'Vehicle Class'],
-  },
-  {
-    key: 'insurance',
-    label: 'Insurance Policy',
-    emoji: '🟡',
-    connectLabel: 'Verify via IIB',
-    color: '#F59E0B',
-    bg: '#FFFBEB',
-    fields: ['Policy Number', 'Insurance Company', 'Policy Type', 'Expiry Date'],
-  },
-];
-
-// Document Accordion Card Component
-function DocCard({ entry, onConnected }) {
-  const [expanded, setExpanded] = useState(false);
-  const [connecting, setConnecting] = useState(false);
-  const [connected, setConnected] = useState(false);
-  const [manual, setManual] = useState(false);
-  const [fieldsState, setFieldsState] = useState({});
-
-  const handleConnect = () => {
-    setConnecting(true);
-    setTimeout(() => {
-      setConnecting(false);
-      setConnected(true);
-      onConnected(entry.key);
-    }, 1500);
-  };
-
-  const handleSaveManual = () => {
-    setConnected(true);
-    onConnected(entry.key);
-  };
-
-  return (
-    <View style={[styles.docCard, connected ? { borderColor: entry.color + '40' } : null]}>
-      {/* Header Row */}
-      <TouchableOpacity 
-        onPress={() => setExpanded(!expanded)} 
-        style={styles.docHeader}
-        activeOpacity={0.7}
-      >
-        <View style={[styles.docIconCircle, { backgroundColor: entry.bg }]}>
-          <Text style={styles.docEmoji}>{entry.emoji}</Text>
-        </View>
-        <View style={styles.docTitleBlock}>
-          <Text style={styles.docTitle}>{entry.label}</Text>
-          <Text style={[styles.docStatus, { color: connected ? entry.color : '#EF4444' }]}>
-            {connected ? '✓ Connected' : 'Required — tap to add'}
-          </Text>
-        </View>
-        <Text style={styles.chevron}>{expanded ? '▲' : '▼'}</Text>
-      </TouchableOpacity>
-
-      {/* Expanded Accordion Body */}
-      {expanded && (
-        <View style={styles.docBody}>
-          {connected ? (
-            <View style={styles.successRow}>
-              <Text style={[styles.successCheckText, { color: entry.color }]}>✓ Connected successfully</Text>
-            </View>
-          ) : (
-            <View style={styles.connectPanel}>
-              {!manual ? (
-                <View>
-                  <TouchableOpacity 
-                    onPress={handleConnect} 
-                    disabled={connecting}
-                    style={[styles.connectButton, { backgroundColor: entry.color }]}
-                    activeOpacity={0.85}
-                  >
-                    {connecting ? (
-                      <ActivityIndicator size="small" color="white" />
-                    ) : (
-                      <Text style={styles.connectButtonText}>{entry.connectLabel}</Text>
-                    )}
-                  </TouchableOpacity>
-
-                  <View style={styles.dividerRow}>
-                    <View style={styles.dividerLine} />
-                    <Text style={styles.dividerText}>or</Text>
-                    <View style={styles.dividerLine} />
-                  </View>
-
-                  <TouchableOpacity 
-                    onPress={() => setManual(true)} 
-                    style={styles.manualToggle}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.manualToggleText}>Enter Details Manually</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View style={styles.manualForm}>
-                  {entry.fields.map((f) => (
-                    <View key={f} style={styles.fieldBox}>
-                      <Text style={styles.fieldLabel}>{f}</Text>
-                      <TextInput
-                        style={styles.fieldInput}
-                        placeholder={`e.g. Enter ${f}`}
-                        placeholderTextColor="#9CA3AF"
-                        value={fieldsState[f] || ''}
-                        onChangeText={(text) => setFieldsState(prev => ({ ...prev, [f]: text }))}
-                      />
-                    </View>
-                  ))}
-                  <View style={styles.formActions}>
-                    <TouchableOpacity onPress={() => setManual(false)} style={styles.formCancel} activeOpacity={0.7}>
-                      <Text style={styles.formCancelText}>Back</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSaveManual} style={[styles.formSave, { backgroundColor: entry.color }]} activeOpacity={0.8}>
-                      <Text style={styles.formSaveText}>Save</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-            </View>
-          )}
-        </View>
-      )}
-    </View>
-  );
-}
-
-export default function AddVehicleScreen({ onBack, onSave }) {
+  // Form states
+  const [category, setCategory] = useState('4 Wheeler'); // '2 Wheeler' | '4 Wheeler'
   const [number, setNumber] = useState('');
-  const [type, setType] = useState('car');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [variant, setVariant] = useState('');
   const [fuel, setFuel] = useState('Petrol');
-  const [connectedDocs, setConnectedDocs] = useState(new Set());
-  
-  // Custom dropdown toggle states
-  const [brandDropdownOpen, setBrandDropdownOpen] = useState(false);
+  const [color, setColor] = useState('');
+  const [year, setYear] = useState('2022');
+  const [images, setImages] = useState([]);
 
-  const handleDocConnected = (key) => {
-    setConnectedDocs((prev) => {
-      const next = new Set(prev);
-      next.add(key);
-      return next;
-    });
+  // API Fetch states
+  const [fetchState, setFetchState] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [vahanData, setVahanData] = useState(null);
+  const [fetchError, setFetchError] = useState('');
+  const [errors, setErrors] = useState({});
+
+  // Confirmation state
+  const [confirmed, setConfirmed] = useState(false);
+
+  // Initialize values in Edit Mode
+  useEffect(() => {
+    if (vehicle) {
+      setNumber(vehicle.number || '');
+      setBrand(vehicle.brand || '');
+      setModel(vehicle.model || '');
+      setVariant(vehicle.variant || '');
+      setFuel(vehicle.fuel || 'Petrol');
+      setColor(vehicle.color || '');
+      setYear(vehicle.year || '2022');
+      setImages(vehicle.images || []);
+      
+      const mappedCategory = getVehicleCategory(vehicle.type);
+      setCategory(mappedCategory);
+      
+      // Seed pre-existing VAHAN data if edit mode
+      setVahanData({
+        ownerName: vehicle.ownerName || 'Rushikesh Patil',
+        regDate: vehicle.regDate || 'Apr 20, 2022',
+        engineNumber: 'L15Z3******234',
+        chassisNumber: 'MHHRH2G5********3456',
+        rcStatus: vehicle.status || 'Active'
+      });
+      setFetchState('success');
+    }
+  }, [vehicle]);
+
+  const currentYear = new Date().getFullYear();
+
+  const isValidYear = (yStr) => {
+    const num = parseInt(yStr, 10);
+    return !isNaN(num) && num > 1900 && num <= currentYear;
   };
 
-  const allDocsConnected = docEntries.every((d) => connectedDocs.has(d.key));
-  const isValid = number.trim().length > 3 && brand && model.trim() && allDocsConnected;
+  const isStep2Valid = () => {
+    return !!(number && brand && model.trim() && year && fuel);
+  };
+
+  const triggerVahanFetch = async () => {
+    setFetchState('loading');
+    setFetchError('');
+    try {
+      const response = await fetchVehicleInfo(number);
+      const parsed = parseVehicleResponse(response);
+      setVahanData(parsed);
+
+      // Populate fetched vehicle information automatically
+      if (parsed) {
+        if (parsed.brand) {
+          setBrand(parsed.brand);
+        } else if (parsed.name) {
+          const parts = parsed.name.split(' ');
+          if (parts[0]) setBrand(parts[0]);
+        }
+        if (parsed.model) {
+          setModel(parsed.model);
+        } else if (parsed.name) {
+          const parts = parsed.name.split(' ');
+          if (parts.length > 1) setModel(parts.slice(1).join(' '));
+        }
+        if (parsed.fuelType) {
+          setFuel(parsed.fuelType);
+        }
+        if (parsed.color) {
+          setColor(parsed.color);
+        }
+        if (parsed.mfgYear) {
+          setYear(parsed.mfgYear);
+        }
+        if (parsed.transmission) {
+          setVariant(parsed.transmission);
+        }
+      }
+
+      setFetchState('success');
+    } catch (err) {
+      console.error(err);
+      setFetchError(err.message || 'Unable to Fetch Vehicle Information');
+      setFetchState('error');
+    }
+  };
+
+  const handleNextStep = () => {
+    if (step === 1) {
+      setStep(2);
+    } else if (step === 2) {
+      if (!isStep2Valid()) return;
+      
+      const vehicleData = {
+        id: vehicle?.id,
+        number,
+        brand,
+        model,
+        variant,
+        fuel,
+        color,
+        year,
+        type: category === '2 Wheeler' ? 'bike' : 'car'
+      };
+
+      const validation = validateVehicle(vehicleData, vehicles);
+      if (!validation.isValid) {
+        setErrors(validation.errors);
+        return;
+      }
+
+      setErrors({});
+      setStep(3);
+      triggerVahanFetch();
+    } else if (step === 3) {
+      if (fetchState === 'success') {
+        setStep(4);
+      }
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (step === 1) {
+      onBack();
+    } else if (step === 3) {
+      setStep(2);
+    } else {
+      setStep(prev => prev - 1);
+    }
+  };
 
   const handleSave = () => {
-    if (!isValid) return;
+    if (!confirmed) return;
+
     onSave({
-      id: Date.now().toString(),
+      id: isEditMode ? vehicle.id : Date.now().toString(),
       name: `${brand} ${model}`,
       number: number.toUpperCase(),
       fuel,
-      type,
+      type: category === '2 Wheeler' ? 'bike' : 'car',
       status: 'Active',
       brand,
+      brandName: brand,
       model,
+      variant,
+      year,
+      color,
+      images,
+      ownerName: vahanData ? vahanData.ownerName : 'Rushikesh Patil',
+      regDate: vahanData ? vahanData.regDate : 'Apr 20, 2022',
+      pucExpiry: vahanData ? vahanData.pucExpiry : 'Dec 31, 2026',
+      rcExpiry: vahanData ? vahanData.rcExpiry : 'Lifetime',
+      insuranceExpiry: vahanData ? vahanData.policyExpiry : 'Jun 25, 2026',
     });
   };
 
@@ -217,170 +206,311 @@ export default function AddVehicleScreen({ onBack, onSave }) {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
-          <TouchableOpacity onPress={onBack} style={styles.backButton} activeOpacity={0.7}>
+          <TouchableOpacity onPress={handlePrevStep} style={styles.backButton} activeOpacity={0.7}>
             <Text style={styles.backArrow}>←</Text>
           </TouchableOpacity>
           <View>
-            <Text style={styles.headerTitle}>Add Vehicle</Text>
-            <Text style={styles.headerSubtitle}>Register your vehicle & documents</Text>
+            <Text style={styles.headerTitle}>{isEditMode ? 'Edit Vehicle' : 'Add Vehicle'}</Text>
+            <Text style={styles.headerSubtitle}>
+              {step === 1 && 'Step 1: Vehicle Category'}
+              {step === 2 && 'Step 2: Specifications & Image'}
+              {step === 3 && 'Step 3: Verification Fetch'}
+              {step === 4 && 'Step 4: Review Details'}
+            </Text>
           </View>
         </View>
       </View>
 
-      {/* Dynamic Preview Strip */}
-      <View style={styles.previewStrip}>
-        <View style={styles.previewIconBox}>
-          <Text style={styles.previewEmoji}>
-            {type === 'car' ? '🚗' : type === 'ev' ? '⚡' : type === 'scooty' ? '🛵' : '🏍️'}
-          </Text>
-        </View>
-        <View>
-          <Text style={styles.previewName}>{brand && model ? `${brand} ${model}` : 'Your Vehicle'}</Text>
-          <Text style={styles.previewNumber}>{number.toUpperCase() || 'Registration Number'}</Text>
-        </View>
-      </View>
+      {/* Stepper display */}
+      <ProgressStepper currentStep={step} />
 
       <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
         
-        {/* ── VEHICLE INFO CARD ── */}
-        <View style={styles.formCard}>
-          <Text style={styles.cardSectionTitle}>Vehicle Details</Text>
+        {/* ── STEP 1: CATEGORY SELECTION ── */}
+        {step === 1 && (
+          <View style={styles.formCard}>
+            <Text style={styles.cardSectionTitle}>Select Vehicle Category</Text>
 
-          {/* Registration Number */}
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Vehicle Number *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. MH-19-AB-1234"
-              placeholderTextColor="#9CA3AF"
-              value={number}
-              onChangeText={setNumber}
-              autoCapitalize="characters"
-            />
+            <View style={styles.categoryContainer}>
+              <TouchableOpacity
+                onPress={() => setCategory('2 Wheeler')}
+                style={[styles.categoryCard, category === '2 Wheeler' ? styles.categoryActive : null]}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.categoryEmoji}>🏍️</Text>
+                <Text style={styles.categoryLabel}>2 Wheeler</Text>
+                <Text style={styles.categoryDesc}>Bikes, Scooters & Scooties</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setCategory('4 Wheeler')}
+                style={[styles.categoryCard, category === '4 Wheeler' ? styles.categoryActive : null]}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.categoryEmoji}>🚗</Text>
+                <Text style={styles.categoryLabel}>4 Wheeler</Text>
+                <Text style={styles.categoryDesc}>Sedans, SUVs & Hatchbacks</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              onPress={handleNextStep}
+              style={[styles.primaryBtn, styles.primaryBtnEnabled, { marginTop: 24 }]}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.primaryBtnText}>Continue to Specs</Text>
+            </TouchableOpacity>
           </View>
+        )}
 
-          {/* Vehicle Type Grid Selector */}
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Vehicle Type *</Text>
-            <View style={styles.typeGrid}>
-              {vehicleTypes.map((t) => {
-                const active = type === t.id;
-                return (
+        {/* ── STEP 2: VEHICLE DETAILS & PHOTO ── */}
+        {step === 2 && (
+          <View style={styles.formCard}>
+            <Text style={styles.cardSectionTitle}>Vehicle Specifications</Text>
+
+            {/* Registration Number */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Registration Number *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. MH19AB1234"
+                placeholderTextColor="#94A3B8"
+                value={number}
+                onChangeText={(text) => {
+                  setNumber(text);
+                  if (errors.number) setErrors(prev => ({ ...prev, number: '' }));
+                }}
+                autoCapitalize="characters"
+              />
+              {errors.number ? (
+                <Text style={styles.errorText}>{errors.number}</Text>
+              ) : number.length > 3 && !validateRegistration(number) ? (
+                <Text style={styles.errorText}>Invalid registration format. Use e.g. MH19AB1234</Text>
+              ) : null}
+            </View>
+
+            {/* Brand Dropdown */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Manufacturer/Brand *</Text>
+              <BrandDropdown selectedValue={brand} onValueChange={setBrand} />
+            </View>
+
+            {/* Model */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Model Name *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Swift, City, Activa"
+                placeholderTextColor="#94A3B8"
+                value={model}
+                onChangeText={setModel}
+              />
+            </View>
+
+            {/* Variant */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Variant (Optional)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. VXI, ZXI, STD"
+                placeholderTextColor="#94A3B8"
+                value={variant}
+                onChangeText={setVariant}
+              />
+            </View>
+
+            {/* Fuel Selector */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Fuel Type *</Text>
+              <View style={styles.fuelGrid}>
+                {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'].map((f) => {
+                  const active = fuel === f;
+                  return (
+                    <TouchableOpacity
+                      key={f}
+                      onPress={() => setFuel(f)}
+                      style={[styles.fuelButton, active ? styles.fuelButtonActive : null]}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.fuelText, active ? styles.fuelTextActive : null]}>{f}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Color */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Color (Optional)</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Midnight Black, Silver"
+                placeholderTextColor="#94A3B8"
+                value={color}
+                onChangeText={setColor}
+              />
+            </View>
+
+            {/* Manufacturing Year */}
+            <View style={styles.inputBox}>
+              <Text style={styles.label}>Manufacturing Year *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. 2022"
+                placeholderTextColor="#94A3B8"
+                value={year}
+                onChangeText={(text) => {
+                  setYear(text);
+                  if (errors.year) setErrors(prev => ({ ...prev, year: '' }));
+                }}
+                keyboardType="number-pad"
+                maxLength={4}
+              />
+              {errors.year ? (
+                <Text style={styles.errorText}>{errors.year}</Text>
+              ) : year.length === 4 && !isValidYear(year) ? (
+                <Text style={styles.errorText}>Year cannot exceed {currentYear}</Text>
+              ) : null}
+            </View>
+
+            {/* Upload Vehicle Photo */}
+            <Text style={[styles.label, { marginTop: 12 }]}>Upload Vehicle Photo (Optional)</Text>
+            <ImageUploader images={images} onChange={setImages} />
+
+            {/* Next Step Action */}
+            <TouchableOpacity
+              disabled={!isStep2Valid()}
+              onPress={handleNextStep}
+              style={[
+                styles.primaryBtn,
+                isStep2Valid() ? styles.primaryBtnEnabled : styles.primaryBtnDisabled,
+                { marginTop: 24 }
+              ]}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.primaryBtnText}>Verify Vehicle Registration</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* ── STEP 3: FETCH VEHICLE INFO ── */}
+        {step === 3 && (
+          <View style={styles.formCard}>
+            <Text style={styles.cardSectionTitle}>VAHAN Verification Status</Text>
+
+            {fetchState === 'loading' && (
+              <View style={styles.statusBox}>
+                <VehicleInfoLoader text="Fetching Vehicle details from National VAHAN Registry..." />
+              </View>
+            )}
+
+            {fetchState === 'success' && (
+              <View style={styles.statusBox}>
+                <Text style={styles.successEmoji}>✅</Text>
+                <Text style={styles.successHeading}>Retrieved Successfully</Text>
+                <Text style={styles.statusSub}>Vehicle Information Retrieved Successfully</Text>
+                
+                {vahanData && (
+                  <View style={styles.vahanSummary}>
+                    <Text style={styles.summaryOwner}>Owner: {vahanData.ownerName}</Text>
+                    <Text style={styles.summaryReg}>Reg Date: {vahanData.regDate}</Text>
+                    <Text style={styles.summaryStatus}>RC Status: {vahanData.rcStatus}</Text>
+                  </View>
+                )}
+
+                <TouchableOpacity
+                  onPress={() => setStep(4)}
+                  style={[styles.primaryBtn, styles.primaryBtnEnabled, { marginTop: 20 }]}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.primaryBtnText}>Proceed to Review</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {fetchState === 'error' && (
+              <View style={styles.statusBox}>
+                <Text style={styles.errorEmoji}>❌</Text>
+                <Text style={styles.errorHeading}>Verification Failed</Text>
+                <Text style={styles.statusSub}>{fetchError || 'Unable to Fetch Vehicle Information'}</Text>
+
+                <View style={styles.errorActions}>
                   <TouchableOpacity
-                    key={t.id}
-                    onPress={() => {
-                      setType(t.id);
-                      setBrand('');
-                      setFuel(fuels[t.id][0]);
-                    }}
-                    style={[styles.typeButton, active ? styles.typeButtonActive : null]}
+                    onPress={triggerVahanFetch}
+                    style={[styles.primaryBtn, styles.primaryBtnEnabled, { flex: 1 }]}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.typeEmoji}>{t.emoji}</Text>
-                    <Text style={[styles.typeText, active ? styles.typeTextActive : null]}>{t.label}</Text>
+                    <Text style={styles.primaryBtnText}>Retry Fetch</Text>
                   </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
 
-          {/* Custom Brand Dropdown Box */}
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Brand *</Text>
-            <TouchableOpacity 
-              onPress={() => setBrandDropdownOpen(!brandDropdownOpen)}
-              style={styles.dropdownTrigger}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.dropdownValue, !brand ? styles.dropdownPlaceholder : null]}>
-                {brand || 'Select Brand'}
-              </Text>
-              <Text style={styles.dropdownChevron}>{brandDropdownOpen ? '▲' : '▼'}</Text>
-            </TouchableOpacity>
-
-            {brandDropdownOpen && (
-              <View style={styles.dropdownList}>
-                {brands[type].map((b) => (
                   <TouchableOpacity
-                    key={b}
-                    onPress={() => {
-                      setBrand(b);
-                      setBrandDropdownOpen(false);
-                    }}
-                    style={styles.dropdownItem}
+                    onPress={() => setStep(2)}
+                    style={styles.backDetailsBtn}
+                    activeOpacity={0.8}
                   >
-                    <Text style={styles.dropdownItemText}>{b}</Text>
+                    <Text style={styles.backDetailsText}>Edit Specs</Text>
                   </TouchableOpacity>
-                ))}
+                </View>
               </View>
             )}
           </View>
+        )}
 
-          {/* Model Name */}
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Model *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. City, Activa, Creta"
-              placeholderTextColor="#9CA3AF"
-              value={model}
-              onChangeText={setModel}
+        {/* ── STEP 4: REVIEW & CONFIRM ── */}
+        {step === 4 && (
+          <View style={styles.formCard}>
+            <Text style={styles.cardSectionTitle}>Verify & Confirm Registration</Text>
+
+            <VehicleReviewCard
+              brand={brand}
+              model={model}
+              number={number}
+              type={category === '2 Wheeler' ? 'bike' : 'car'}
+              fuel={fuel}
+              year={year}
+              color={color}
+              images={images}
+              vahanData={vahanData}
+              variant={variant}
             />
-          </View>
 
-          {/* Fuel Selector badges row */}
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Fuel Type</Text>
-            <View style={styles.fuelRow}>
-              {fuels[type].map((f) => {
-                const active = fuel === f;
-                return (
-                  <TouchableOpacity
-                    key={f}
-                    onPress={() => setFuel(f)}
-                    style={[styles.fuelBadge, active ? styles.fuelBadgeActive : null]}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.fuelText, active ? styles.fuelTextActive : null]}>{f}</Text>
-                  </TouchableOpacity>
-                );
-              })}
+            {/* Checkbox confirmation */}
+            <TouchableOpacity 
+              onPress={() => setConfirmed(!confirmed)}
+              style={styles.checkboxRow}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.checkbox, confirmed ? styles.checkboxChecked : null]}>
+                {confirmed && <Text style={styles.checkMark}>✓</Text>}
+              </View>
+              <Text style={styles.checkboxLabel}>I confirm that all entered details and uploaded specifications are correct.</Text>
+            </TouchableOpacity>
+
+            <View style={styles.finalActions}>
+              <TouchableOpacity
+                onPress={() => setStep(2)}
+                style={styles.editFormBtn}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.editFormText}>Edit Specs</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                disabled={!confirmed}
+                onPress={handleSave}
+                style={[
+                  styles.primaryBtn,
+                  confirmed ? styles.primaryBtnEnabled : styles.primaryBtnDisabled,
+                  { flex: 2, marginTop: 0 }
+                ]}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.primaryBtnText}>{isEditMode ? 'Confirm & Update' : 'Register & Add Vehicle'}</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </View>
+        )}
 
-        {/* ── DOCUMENTS UPLOAD CARD ── */}
-        <View style={styles.docHeaderRow}>
-          <View>
-            <Text style={styles.docSectionTitle}>Add Documents</Text>
-            <Text style={styles.docSectionSubtitle}>All documents must be connected to proceed</Text>
-          </View>
-          <View style={styles.requiredBadge}>
-            <Text style={styles.requiredBadgeText}>Required</Text>
-          </View>
-        </View>
-
-        <View style={styles.docsList}>
-          {docEntries.map((doc) => (
-            <DocCard key={doc.key} entry={doc} onConnected={handleDocConnected} />
-          ))}
-        </View>
-
-        {/* Save Vehicle Action Button */}
-        <TouchableOpacity
-          disabled={!isValid}
-          onPress={handleSave}
-          style={[styles.saveButton, isValid ? styles.saveButtonEnabled : styles.saveButtonDisabled]}
-          activeOpacity={0.88}
-        >
-          <Text style={styles.saveButtonText}>
-            {isValid
-              ? 'Save Vehicle'
-              : !allDocsConnected
-              ? `Connect ${docEntries.length - connectedDocs.size} more document${docEntries.length - connectedDocs.size > 1 ? 's' : ''}`
-              : 'Fill vehicle details'}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -423,77 +553,78 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   headerSubtitle: {
-    color: 'rgba(219, 234, 254, 0.8)',
+    color: 'rgba(219, 234, 254, 0.85)',
     fontSize: 12,
     marginTop: 2,
-  },
-  previewStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderColor: '#E5E7EB',
-    gap: 12,
-  },
-  previewIconBox: {
-    width: 52,
-    height: 38,
-    borderRadius: 10,
-    backgroundColor: '#EFF6FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  previewEmoji: {
-    fontSize: 22,
-  },
-  previewName: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  previewNumber: {
-    fontSize: 11,
-    color: '#9CA3AF',
-    marginTop: 1,
   },
   scrollBody: {
     flex: 1,
   },
   scrollPadding: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 20,
     paddingBottom: 40,
   },
   formCard: {
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     borderRadius: 24,
     padding: 20,
-    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
-    shadowRadius: 6,
+    shadowRadius: 8,
     elevation: 2,
   },
   cardSectionTitle: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#4B5563',
+    color: '#64748B',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 16,
+    marginBottom: 20,
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  categoryCard: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    borderRadius: 20,
+    padding: 16,
+    alignItems: 'center',
+    gap: 6,
+  },
+  categoryActive: {
+    borderColor: '#2563EB',
+    backgroundColor: '#EFF6FF',
+  },
+  categoryEmoji: {
+    fontSize: 32,
+    marginBottom: 4,
+  },
+  categoryLabel: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  categoryDesc: {
+    fontSize: 10,
+    color: '#64748B',
+    textAlign: 'center',
+    fontWeight: '600',
   },
   inputBox: {
-    marginBottom: 16,
+    marginBottom: 18,
   },
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#374151',
+    color: '#334155',
     marginBottom: 8,
   },
   input: {
@@ -501,320 +632,187 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     backgroundColor: '#F8FAFC',
     fontSize: 14,
-    color: '#111827',
-  },
-  typeGrid: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  typeButton: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: 14,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  typeButtonActive: {
-    backgroundColor: '#EFF6FF',
-    borderColor: '#2563EB',
-  },
-  typeEmoji: {
-    fontSize: 20,
-    marginBottom: 4,
-  },
-  typeText: {
-    fontSize: 11,
+    color: '#0F172A',
     fontWeight: '700',
-    color: '#6B7280',
   },
-  typeTextActive: {
-    color: '#2563EB',
-  },
-  dropdownTrigger: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#F8FAFC',
-  },
-  dropdownValue: {
-    fontSize: 14,
-    color: '#111827',
-    fontWeight: '600',
-  },
-  dropdownPlaceholder: {
-    color: '#9CA3AF',
-  },
-  dropdownChevron: {
-    fontSize: 10,
-    color: '#9CA3AF',
-  },
-  dropdownList: {
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    marginTop: 4,
-    maxHeight: 180,
-    overflow: 'hidden',
-  },
-  dropdownItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderColor: '#F3F4F6',
-  },
-  dropdownItemText: {
-    fontSize: 14,
-    color: '#1F2937',
-    fontWeight: '500',
-  },
-  fuelRow: {
+  fuelGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
-  fuelBadge: {
+  fuelButton: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: '#E5E7EB',
+    borderColor: '#E2E8F0',
     backgroundColor: '#F8FAFC',
   },
-  fuelBadgeActive: {
+  fuelButtonActive: {
     backgroundColor: '#2563EB',
     borderColor: '#2563EB',
   },
   fuelText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#4B5563',
+    color: '#475569',
   },
   fuelTextActive: {
     color: 'white',
   },
-  docHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  docSectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#111827',
-  },
-  docSectionSubtitle: {
+  errorText: {
     fontSize: 11,
-    color: '#9CA3AF',
-    marginTop: 2,
-  },
-  requiredBadge: {
-    backgroundColor: '#FEF2F2',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 8,
-  },
-  requiredBadgeText: {
-    color: '#DC2626',
-    fontSize: 10,
-    fontWeight: '800',
-    textTransform: 'uppercase',
-  },
-  docsList: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  docCard: {
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: 20,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  docHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  docIconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  docEmoji: {
-    fontSize: 18,
-  },
-  docTitleBlock: {
-    flex: 1,
-  },
-  docTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  docStatus: {
-    fontSize: 11,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-  chevron: {
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  docBody: {
-    borderTopWidth: 1,
-    borderColor: '#F3F4F6',
-    padding: 16,
-    backgroundColor: 'white',
-  },
-  successRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  successCheckText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  connectPanel: {
-    paddingTop: 4,
-  },
-  connectButton: {
-    width: '100%',
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  connectButtonText: {
-    color: 'white',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 12,
-    gap: 8,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E5E7EB',
-  },
-  dividerText: {
-    fontSize: 11,
-    color: '#9CA3AF',
-  },
-  manualToggle: {
-    width: '100%',
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  manualToggleText: {
-    color: '#6B7280',
-    fontSize: 13,
+    color: '#EF4444',
+    marginTop: 6,
     fontWeight: '600',
   },
-  manualForm: {
-    gap: 12,
-  },
-  fieldBox: {
-    gap: 4,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#4B5563',
-  },
-  fieldInput: {
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 10,
-    padding: 10,
-    fontSize: 13,
-    backgroundColor: '#F8FAFC',
-    color: '#1F2937',
-  },
-  formActions: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 4,
-  },
-  formCancel: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-  },
-  formCancelText: {
-    color: '#6B7280',
-    fontWeight: '600',
-    fontSize: 13,
-  },
-  formSave: {
-    flex: 1,
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  formSaveText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 13,
-  },
-  saveButton: {
+  primaryBtn: {
     width: '100%',
-    borderRadius: 20,
+    borderRadius: 18,
     paddingVertical: 16,
     alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 8,
+    justifyContent: 'center',
   },
-  saveButtonDisabled: {
-    backgroundColor: '#E5E7EB',
-  },
-  saveButtonEnabled: {
+  primaryBtnEnabled: {
     backgroundColor: '#2563EB',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 4,
   },
-  saveButtonText: {
+  primaryBtnDisabled: {
+    backgroundColor: '#94A3B8',
+  },
+  primaryBtnText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: '750',
+  },
+  statusBox: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  successEmoji: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  successHeading: {
+    fontSize: 18,
+    fontWeight: '850',
+    color: '#16A34A',
+  },
+  errorEmoji: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  errorHeading: {
+    fontSize: 18,
+    fontWeight: '850',
+    color: '#EF4444',
+  },
+  statusSub: {
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '650',
+    marginTop: 6,
+    textAlign: 'center',
+  },
+  vahanSummary: {
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    borderRadius: 16,
+    padding: 14,
+    width: '100%',
+    marginTop: 20,
+    gap: 6,
+  },
+  summaryOwner: {
+    fontSize: 12,
+    color: '#1E293B',
     fontWeight: '700',
+  },
+  summaryReg: {
+    fontSize: 12,
+    color: '#475569',
+    fontWeight: '650',
+  },
+  summaryStatus: {
+    fontSize: 12,
+    color: '#16A34A',
+    fontWeight: '800',
+  },
+  errorActions: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+    marginTop: 24,
+  },
+  backDetailsBtn: {
+    flex: 1,
+    borderWidth: 1.5,
+    borderColor: '#CBD5E1',
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  backDetailsText: {
+    color: '#475569',
+    fontWeight: '750',
+    fontSize: 14,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 24,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#CBD5E1',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    borderColor: '#2563EB',
+    backgroundColor: '#2563EB',
+  },
+  checkMark: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  checkboxLabel: {
+    flex: 1,
+    fontSize: 11,
+    color: '#475569',
+    fontWeight: '600',
+    lineHeight: 16,
+  },
+  finalActions: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  editFormBtn: {
+    flex: 1,
+    paddingVertical: 16,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: '#CBD5E1',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  editFormText: {
+    color: '#475569',
+    fontWeight: '750',
+    fontSize: 14,
   },
 });

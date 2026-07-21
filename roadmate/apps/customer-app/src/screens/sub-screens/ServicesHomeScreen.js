@@ -1,41 +1,64 @@
+// roadmate/apps/customer-app/src/screens/sub-screens/ServicesHomeScreen.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Dimensions, Image, ImageBackground } from 'react-native';
+import { categories, providers } from '../../services/serviceMockData';
+import { CategorySection } from '../../components/ServiceComponents';
 
 const { width } = Dimensions.get('window');
 
-const categories = [
-  { id: 'Car Wash', emoji: '🫧', accent: '#06B6D4', bg: '#ECFEFF' },
-  { id: 'Garage', emoji: '🔧', accent: '#2563EB', bg: '#EFF6FF' },
-  { id: 'Denting & Painting', emoji: '🎨', accent: '#EC4899', bg: '#FDF2F8' },
-  { id: 'Towing', emoji: '🛻', accent: '#F97316', bg: '#FFF7ED' },
-  { id: 'PUC Center', emoji: '💨', accent: '#22C55E', bg: '#F0FDF4' },
-  { id: 'Service Center', emoji: '🏬', accent: '#6366F1', bg: '#EEF2FF' },
-  { id: 'Showroom', emoji: '🏪', accent: '#D97706', bg: '#FFFBEB' },
-];
-
-const highlights = [
-  { name: 'Speed Auto Garage', type: 'Garage', emoji: '🔧', rating: 4.8, dist: '0.8 km', open: true },
-  { name: 'Crystal Car Wash', type: 'Car Wash', emoji: '🫧', rating: 4.6, dist: '1.2 km', open: true },
-  { name: 'Jalgaon PUC Center', type: 'PUC Center', emoji: '💨', rating: 4.5, dist: '2.1 km', open: false },
-];
-
-export default function ServicesHomeScreen({ onBack, onSelectCategory }) {
+export default function ServicesHomeScreen({ onBack, onSelectCategory, savedProviderIds, toggleSaveProvider, onSelectProvider }) {
   const [search, setSearch] = useState('');
 
-  const filtered = categories.filter((c) => 
-    c.id.toLowerCase().includes(search.toLowerCase())
-  );
+  // Structured service categories lists
+  const serviceSections = [
+    {
+      title: 'Regular Vendors',
+      items: [
+        { id: 'Garage', name: 'Garage', emoji: '🔧', accent: '#2563EB', bg: '#EFF6FF', count: 12, description: 'Periodic services, mechanical repairs & diagnostics', image: require('../../../assets/services_images/garage.jpg') },
+        { id: 'Car Wash', name: 'Car Wash', emoji: '🫧', accent: '#06B6D4', bg: '#ECFEFF', count: 5, description: 'Premium washing, detailing & interior cleanup', image: require('../../../assets/services_images/car_wash.jpg') },
+      ]
+    },
+    {
+      title: 'Service Providers',
+      items: [
+        { id: 'PUC Center', name: 'PUC Center', emoji: '💨', accent: '#22C55E', bg: '#F0FDF4', count: 4, description: 'Pollution certificates & emission testing', image: require('../../../assets/services_images/puc center.jpg') },
+        { id: 'Towing', name: 'Towing', emoji: '🛻', accent: '#F97316', bg: '#FFF7ED', count: 8, description: '24/7 roadside assistance & flatbed towing', image: require('../../../assets/services_images/towing.jpg') },
+        { id: 'Driving Classes', name: 'Driving Classes', emoji: '🚗', accent: '#3B82F6', bg: '#EFF6FF', count: 3, description: 'Professional driving lessons & tutoring', image: require('../../../assets/services_images/service center.jpg') },
+        { id: 'RTO Agents', name: 'RTO Agents', emoji: '📝', accent: '#EC4899', bg: '#FDF2F8', count: 6, description: 'License issues, registration & transfer agents', image: require('../../../assets/services_images/denting&painting.jpg') },
+      ]
+    },
+    {
+      title: 'Showrooms',
+      items: [
+        { id: 'Two Wheelers', name: 'Two Wheelers', emoji: '🏍️', accent: '#8B5CF6', bg: '#F5F3FF', count: 4, description: 'New bikes showroom, test drives & bookings', image: require('../../../assets/vehicle_placeholder.png') },
+        { id: 'Four Wheelers', name: 'Four Wheelers', emoji: '🚘', accent: '#EF4444', bg: '#FEF2F2', count: 2, description: 'New cars showroom, EV bookings & specs', image: require('../../../assets/vehicle_placeholder.png') },
+        { id: 'Service Center', name: 'Service Center', emoji: '🏬', accent: '#6366F1', bg: '#EEF2FF', count: 6, description: 'Brand authorized workshop & checkups', image: require('../../../assets/services_images/service center.jpg') },
+      ]
+    }
+  ];
+
+  // Filter sections by search query
+  const filteredSections = serviceSections.map(section => {
+    const matchedItems = section.items.filter(item => 
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.description.toLowerCase().includes(search.toLowerCase())
+    );
+    return { ...section, items: matchedItems };
+  }).filter(section => section.items.length > 0);
+
+  // Get saved providers details
+  const savedProviders = providers.filter((p) => savedProviderIds.includes(p.id));
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* ── Premium Header ── */}
       <View style={styles.header}>
-        <View style={styles.headerRow}>
+        <View style={styles.headerTopRow}>
           <TouchableOpacity onPress={onBack} style={styles.backButton} activeOpacity={0.7}>
             <Text style={styles.backArrow}>←</Text>
           </TouchableOpacity>
-          <View>
-            <Text style={styles.headerTitle}>Services</Text>
+          <View style={styles.locationContainer}>
+            <Text style={styles.locationTitle}>YOUR LOCATION</Text>
             <View style={styles.locationRow}>
               <Text style={styles.locationPin}>📍</Text>
               <Text style={styles.locationText}>Jalgaon, Maharashtra</Text>
@@ -43,13 +66,13 @@ export default function ServicesHomeScreen({ onBack, onSelectCategory }) {
           </View>
         </View>
 
-        {/* Search Input Box */}
-        <View style={styles.searchContainer}>
+        {/* Search & Location Bar */}
+        <View style={styles.searchRow}>
           <View style={styles.searchBox}>
             <Text style={styles.searchIcon}>🔍</Text>
             <TextInput
               style={styles.searchInput}
-              placeholder="Search services..."
+              placeholder="Search category, service, workshop..."
               placeholderTextColor="#9CA3AF"
               value={search}
               onChangeText={setSearch}
@@ -64,62 +87,60 @@ export default function ServicesHomeScreen({ onBack, onSelectCategory }) {
       </View>
 
       <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
-        {/* Categories Catalog */}
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionHeaderTitle}>Service Categories</Text>
-          </View>
-          <View style={styles.categoriesGrid}>
-            {filtered.map((cat) => (
-              <TouchableOpacity
-                key={cat.id}
-                onPress={() => onSelectCategory(cat.id)}
-                style={styles.categoryCard}
-                activeOpacity={0.8}
-              >
-                <View style={[styles.categoryIconCircle, { backgroundColor: cat.bg }]}>
-                  <Text style={styles.categoryEmoji}>{cat.emoji}</Text>
-                </View>
-                <Text style={[styles.categoryLabel, { color: cat.accent }]}>{cat.id}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
 
-        {/* Nearby Highlights */}
-        <View style={styles.sectionCard}>
-          <View style={styles.sectionHeaderRow}>
-            <View>
-              <Text style={styles.sectionHeaderTitle}>📍 Nearby Highlights</Text>
-              <Text style={styles.sectionHeaderSubtitle}>Top-rated providers in Jalgaon</Text>
+        {/* ── Saved Services Section (Only visible if user has saved ones) ── */}
+        {savedProviders.length > 0 && (
+          <View style={styles.sectionContainer}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Saved Services</Text>
+              <Text style={styles.sectionCountBadge}>{savedProviders.length}</Text>
             </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.savedScrollContainer}>
+              {savedProviders.map((p) => (
+                <TouchableOpacity
+                  key={p.id}
+                  onPress={() => onSelectProvider(p)}
+                  style={styles.savedCard}
+                  activeOpacity={0.9}
+                >
+                  <View style={styles.savedCardHeader}>
+                    <View style={styles.savedEmojiCircle}>
+                      <Text style={styles.savedEmoji}>🔧</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => toggleSaveProvider(p.id)}
+                      style={styles.removeSavedButton}
+                    >
+                      <Text style={styles.removeSavedText}>❤️</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={styles.savedCardName} numberOfLines={1}>{p.name}</Text>
+                  <Text style={styles.savedCardCat}>{p.category}</Text>
+                  <View style={styles.savedCardFooter}>
+                    <Text style={styles.savedCardRating}>⭐ {p.rating}</Text>
+                    <Text style={styles.savedCardDist}>• {p.distance} km</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
-          
-          <View style={styles.highlightsList}>
-            {highlights.map((p, i) => (
-              <View key={p.name} style={[styles.highlightRow, i < highlights.length - 1 ? styles.borderBottom : null]}>
-                <View style={styles.highlightLeft}>
-                  <View style={styles.highlightEmojiCircle}>
-                    <Text style={styles.highlightEmoji}>{p.emoji}</Text>
-                  </View>
-                  <View>
-                    <Text style={styles.highlightName}>{p.name}</Text>
-                    <Text style={styles.highlightSubText}>{p.type} · {p.dist}</Text>
-                  </View>
-                </View>
-                
-                <View style={styles.highlightRight}>
-                  <Text style={styles.ratingText}>⭐ {p.rating}</Text>
-                  <View style={[styles.openStatusPill, { backgroundColor: p.open ? '#E8F5E9' : '#FFEBEE' }]}>
-                    <Text style={[styles.openStatusText, { color: p.open ? '#2E7D32' : '#C62828' }]}>
-                      {p.open ? 'Open' : 'Closed'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
+        )}
+
+        {/* ── Restructured Categories Catalog ── */}
+        {filteredSections.map((section, idx) => (
+          <CategorySection 
+            key={idx}
+            title={section.title}
+            items={section.items}
+            onSelectCategory={onSelectCategory}
+          />
+        ))}
+
+        {filteredSections.length === 0 && (
+          <View style={styles.emptyCategories}>
+            <Text style={styles.emptyText}>No matching categories found</Text>
           </View>
-        </View>
+        )}
 
       </ScrollView>
     </View>
@@ -135,21 +156,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#2563EB',
     paddingTop: 50,
     paddingBottom: 20,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
   },
-  headerRow: {
+  headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    gap: 14,
+    gap: 16,
     marginBottom: 16,
   },
   backButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -158,26 +184,30 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  headerTitle: {
-    color: 'white',
-    fontSize: 20,
+  locationContainer: {
+    flex: 1,
+  },
+  locationTitle: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 9,
     fontWeight: '800',
+    letterSpacing: 1.5,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 2,
-    gap: 3,
+    gap: 4,
   },
   locationPin: {
-    fontSize: 10,
+    fontSize: 12,
   },
   locationText: {
-    color: 'rgba(219, 234, 254, 0.8)',
-    fontSize: 11,
-    fontWeight: '600',
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '700',
   },
-  searchContainer: {
+  searchRow: {
     paddingHorizontal: 20,
   },
   searchBox: {
@@ -191,18 +221,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 2,
+    elevation: 3,
   },
   searchIcon: {
-    fontSize: 14,
+    fontSize: 16,
     marginRight: 10,
     color: '#9CA3AF',
   },
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color: '#111827',
+    color: '#1F2937',
     padding: 0,
+    fontWeight: '600',
   },
   clearSearchIcon: {
     fontSize: 14,
@@ -217,132 +248,106 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 32,
   },
-  sectionCard: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 24,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+
+  sectionContainer: {
+    marginBottom: 24,
   },
   sectionHeaderRow: {
-    borderBottomWidth: 1,
-    borderColor: '#F3F4F6',
-    paddingBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 14,
+    gap: 8,
   },
-  sectionHeaderTitle: {
-    fontSize: 14,
-    fontWeight: '800',
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '850',
     color: '#111827',
   },
-  sectionHeaderSubtitle: {
-    fontSize: 11,
-    color: '#9CA3AF',
-    marginTop: 2,
+  sectionCountBadge: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: 'white',
+    backgroundColor: '#EF4444',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 10,
   },
-  categoriesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  savedScrollContainer: {
     gap: 12,
-    justifyContent: 'space-between',
+    paddingRight: 16,
   },
-  categoryCard: {
-    width: '48%',
+  savedCard: {
+    width: 140,
     backgroundColor: 'white',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 20,
-    padding: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.02,
     shadowRadius: 4,
-    elevation: 1,
+    elevation: 2,
   },
-  categoryIconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  categoryEmoji: {
-    fontSize: 24,
-  },
-  categoryLabel: {
-    fontSize: 12,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  highlightsList: {
-    gap: 8,
-  },
-  highlightRow: {
+  savedCardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    marginBottom: 8,
   },
-  borderBottom: {
-    borderBottomWidth: 1,
-    borderColor: '#F3F4F6',
-  },
-  highlightLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  highlightEmojiCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
+  savedEmojiCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     backgroundColor: '#EFF6FF',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  highlightEmoji: {
-    fontSize: 18,
+  savedEmoji: {
+    fontSize: 14,
   },
-  highlightName: {
-    fontSize: 13,
+  removeSavedButton: {
+    padding: 4,
+  },
+  removeSavedText: {
+    fontSize: 14,
+  },
+  savedCardName: {
+    fontSize: 12,
     fontWeight: '800',
     color: '#111827',
   },
-  highlightSubText: {
-    fontSize: 11,
+  savedCardCat: {
+    fontSize: 10,
     color: '#9CA3AF',
+    fontWeight: '600',
     marginTop: 2,
   },
-  highlightRight: {
-    alignItems: 'flex-end',
-    gap: 4,
+  savedCardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
   },
-  ratingText: {
-    fontSize: 12,
-    fontWeight: '850',
+  savedCardRating: {
+    fontSize: 10,
+    fontWeight: '800',
     color: '#111827',
   },
-  openStatusPill: {
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 6,
+  savedCardDist: {
+    fontSize: 10,
+    color: '#6B7280',
+    marginLeft: 4,
+    fontWeight: '600',
   },
-  openStatusText: {
-    fontSize: 9,
-    fontWeight: '800',
+
+  emptyCategories: {
+    width: '100%',
+    paddingVertical: 32,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: '#6B7280',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

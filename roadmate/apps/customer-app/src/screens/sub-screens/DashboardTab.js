@@ -1,34 +1,148 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, Modal, Alert } from 'react-native';
+import { getRemainingDays, getVehicleAlert } from '../../utils/expiryUtils';
+import { VehicleFilterDropdown } from '../../components/VehicleComponents';
+import { getFuelBadgeColor, filterVehicles } from '../../utils/vehicleUtils';
+import { getChallanSummary } from '../../services/challanService';
 
 const { width } = Dimensions.get('window');
 
-// Custom Vector Badges drawn with Views
-const VehicleIcon = ({ type }) => {
-  const isEv = type === 'ev';
-  const isScoot = type === 'scooty';
-  return (
-    <View style={[styles.vehicleIconContainer, { backgroundColor: isEv ? '#F5F3FF' : isScoot ? '#FFF7ED' : '#EFF6FF' }]}>
-      <Text style={styles.vehicleEmoji}>{isEv ? '⚡' : isScoot ? '🛵' : '🚗'}</Text>
-    </View>
-  );
+// Per-vehicle document mock databases
+const docsByVehicle = {
+  '1': [
+    { key: 'puc', label: 'PUC Certificate', emoji: '🟢', status: 'Valid', expiry: 'Dec 31, 2025', verified: true, color: '#22C55E', bg: '#F0FDF4' },
+    { key: 'rc', label: 'RC Book', emoji: '🔵', status: 'Verified', expiry: 'Lifetime', verified: true, color: '#2563EB', bg: '#EFF6FF' },
+    { key: 'driving-license', label: 'Driving License', emoji: '🟣', status: 'Valid', expiry: 'Mar 15, 2040', verified: true, color: '#8B5CF6', bg: '#F5F3FF' },
+    { key: 'insurance', label: 'Insurance Policy', emoji: '🟡', status: 'Expiring Soon', expiry: 'Jun 25, 2026', verified: false, color: '#F59E0B', bg: '#FFFBEB' },
+  ],
+  '2': [
+    { key: 'puc', label: 'PUC Certificate', emoji: '🔴', status: 'Expired', expiry: 'Jan 10, 2025', verified: false, color: '#EF4444', bg: '#FEF2F2' },
+    { key: 'rc', label: 'RC Book', emoji: '🔵', status: 'Verified', expiry: 'Lifetime', verified: true, color: '#2563EB', bg: '#EFF6FF' },
+    { key: 'driving-license', label: 'Driving License', emoji: '🟣', status: 'Valid', expiry: 'Mar 15, 2040', verified: true, color: '#8B5CF6', bg: '#F5F3FF' },
+    { key: 'insurance', label: 'Insurance Policy', emoji: '🟢', status: 'Valid', expiry: 'Nov 30, 2026', verified: true, color: '#22C55E', bg: '#F0FDF4' },
+  ],
+  '3': [
+    { key: 'puc', label: 'PUC Certificate', emoji: '🟢', status: 'Valid', expiry: 'Feb 28, 2026', verified: true, color: '#22C55E', bg: '#F0FDF4' },
+    { key: 'rc', label: 'RC Book', emoji: '🔵', status: 'Verified', expiry: 'Lifetime', verified: true, color: '#2563EB', bg: '#EFF6FF' },
+    { key: 'driving-license', label: 'Driving License', emoji: '🟣', status: 'Valid', expiry: 'Mar 15, 2040', verified: true, color: '#8B5CF6', bg: '#F5F3FF' },
+    { key: 'insurance', label: 'Insurance Policy', emoji: '🟢', status: 'Valid', expiry: 'Mar 15, 2027', verified: true, color: '#22C55E', bg: '#F0FDF4' },
+  ],
+};
+
+const docNames = {
+  puc: 'PUC',
+  rc: 'RC',
+  'driving-license': 'Driving License',
+  insurance: 'Insurance',
+};
+
+const docIcons = {
+  puc: require('../../../assets/document_images/puc_book.jpg'),
+  rc: require('../../../assets/document_images/rc_book.jpg'),
+  'driving-license': require('../../../assets/document_images/driving_license.jpg'),
+  insurance: require('../../../assets/document_images/insurance.jpg'),
+};
+
+const serviceImages = {
+  'Car Wash': require('../../../assets/services_images/car_wash.jpg'),
+  'Garage': require('../../../assets/services_images/garage.jpg'),
+  'Denting': require('../../../assets/services_images/denting&painting.jpg'),
+  'Towing': require('../../../assets/services_images/towing.jpg'),
+  'PUC Center': require('../../../assets/services_images/puc center.jpg'),
+  'Service Center': require('../../../assets/services_images/service center.jpg'),
+};
+
+const serviceBadges = {
+  'Car Wash': { text: 'Nearby', color: '#3B82F6', bg: '#EFF6FF' },
+  'Garage': { text: '24×7', color: '#EF4444', bg: '#FEF2F2' },
+  'Denting': { text: 'Offer', color: '#10B981', bg: '#ECFDF5' },
+  'Towing': { text: 'Verified', color: '#8B5CF6', bg: '#F5F3FF' },
+  'PUC Center': { text: 'Open Now', color: '#16A34A', bg: '#F0FDF4' },
+  'Service Center': { text: 'Top Rated', color: '#F59E0B', bg: '#FFFBEB' },
 };
 
 export default function DashboardTab({ 
   vehicles, 
+  documents = [],
   backendStatus, 
   onOpenDrawer, 
   onAddVehicle, 
   onOpenDoc, 
   onOpenServices, 
-  onOpenInfoHub 
+  onOpenInfoHub,
+  onOpenProfile,
+  onOpenTips,
+  notifications = [],
+  onNotificationClick,
+  onCheckValuation,
+  onOpenVehicleInsights,
+  onOpenExpenseTracker,
+  onOpenFuelTracker,
+  onOpenChallan
 }) {
+  const [notifBoxOpen, setNotifBoxOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('All Vehicles');
+  
+  const [challanStats, setChallanStats] = useState({ pendingCount: 0, totalFine: 0, recentList: [] });
+
+  useEffect(() => {
+    let active = true;
+    const fetchStats = async () => {
+      try {
+        let pendingCount = 0;
+        let totalFine = 0;
+        let recentList = [];
+        
+        for (const v of vehicles) {
+          const summary = await getChallanSummary(v.id);
+          if (summary) {
+            pendingCount += summary.pendingCount;
+            totalFine += summary.totalPenalties;
+            const pendingChallans = (summary.recentChallans || []).filter(c => c.status === 'Pending');
+            pendingChallans.forEach(c => {
+              recentList.push({
+                ...c,
+                vehicleId: v.id,
+                vehicleName: v.name,
+                vehicleNumber: v.number
+              });
+            });
+          }
+        }
+
+        if (active) {
+          setChallanStats({
+            pendingCount,
+            totalFine,
+            recentList: recentList.slice(0, 3)
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching challan stats:', err);
+      }
+    };
+    fetchStats();
+    return () => { active = false; };
+  }, [vehicles]);
+
+  const filteredVehicles = filterVehicles(vehicles, selectedFilter);
+
+  const homeMockTips = [
+    { id: 't1', title: '10 Tips to Maximize Fuel Efficiency', description: 'Simple driving habits that can reduce fuel consumption...', category: 'Mileage', readTime: '4 min read', imageKey: 'garage' },
+    { id: 't2', title: 'Monsoon Car Care Special Checklist', description: 'Ensure your brakes, wipers, and tyres are ready for rain...', category: 'Monsoon Care', readTime: '6 min read', imageKey: 'service' },
+    { id: 't3', title: 'EV Battery Longevity Hacks', description: 'Maximize the battery service life of your electric vehicle...', category: 'EV Care', readTime: '5 min read', imageKey: 'denting' },
+  ];
+
+  const tipImages = {
+    garage: require('../../../assets/services_images/garage.jpg'),
+    service: require('../../../assets/services_images/service center.jpg'),
+    denting: require('../../../assets/services_images/denting&painting.jpg'),
+  };
 
   const docCards = [
-    { key: 'puc', label: 'PUC', emoji: '🟢', text: 'PUC', color: '#22C55E', bg: '#F0FDF4' },
-    { key: 'rc', label: 'RC Book', emoji: '🔵', text: 'RC Book', color: '#2563EB', bg: '#EFF6FF' },
-    { key: 'driving-license', label: 'License', emoji: '🟣', text: 'License', color: '#8B5CF6', bg: '#F5F3FF' },
-    { key: 'insurance', label: 'Insurance', emoji: '🟡', text: 'Insurance', color: '#F59E0B', bg: '#FFFBEB' },
+    { key: 'insurance', label: 'Insurance', emoji: '🛡️', text: 'Insurance', color: '#F59E0B', bg: '#FFFBEB' },
+    { key: 'puc', label: 'PUC', emoji: '🍃', text: 'PUC', color: '#10B981', bg: '#ECFDF5' },
+    { key: 'rc', label: 'RC Book', emoji: '🪪', text: 'RC Book', color: '#2563EB', bg: '#EFF6FF' },
   ];
 
   const services = [
@@ -48,27 +162,43 @@ export default function DashboardTab({
         <View style={styles.circleOrnament1} />
         <View style={styles.circleOrnament2} />
 
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={styles.welcomeText}>Hello 👋</Text>
-            <Text style={styles.profileName}>Rushikesh</Text>
-            <View style={styles.locationRow}>
-              <Text style={styles.locationPin}>📍</Text>
-              <Text style={styles.locationText}>Jalgaon, Maharashtra</Text>
-            </View>
-          </View>
+        {/* Top actions bar */}
+        <View style={styles.headerTopRow}>
+          {/* Hamburger Menu (top-left) */}
+          <TouchableOpacity onPress={onOpenDrawer} style={styles.iconButton} activeOpacity={0.7}>
+            <Text style={styles.iconEmoji}>☰</Text>
+          </TouchableOpacity>
 
-          <View style={styles.headerActions}>
+          {/* Right actions (Bell + Profile Avatar) */}
+          <View style={styles.headerRightActions}>
             {/* Bell Notification */}
-            <TouchableOpacity style={styles.iconButton} activeOpacity={0.7}>
+            <TouchableOpacity onPress={() => setNotifBoxOpen(true)} style={styles.iconButton} activeOpacity={0.7}>
               <Text style={styles.iconEmoji}>🔔</Text>
-              <View style={styles.notificationDot} />
+              {notifications.filter(n => n.status === 'Unread').length > 0 && (
+                <View style={styles.notifBadge}>
+                  <Text style={styles.notifBadgeText}>
+                    {notifications.filter(n => n.status === 'Unread').length}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
 
-            {/* Menu Hamburger */}
-            <TouchableOpacity onPress={onOpenDrawer} style={styles.iconButton} activeOpacity={0.7}>
-              <Text style={styles.iconEmoji}>☰</Text>
+            {/* Profile Avatar */}
+            <TouchableOpacity onPress={onOpenProfile} style={styles.avatarButton} activeOpacity={0.7}>
+              <View style={styles.avatarCircle}>
+                <Text style={styles.avatarText}>RP</Text>
+              </View>
             </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Greeting Section */}
+        <View style={styles.headerGreetingSection}>
+          <Text style={styles.welcomeText}>Hello 👋</Text>
+          <Text style={styles.profileName}>Rushikesh</Text>
+          <View style={styles.locationRow}>
+            <Text style={styles.locationPin}>📍</Text>
+            <Text style={styles.locationText}>Jalgaon, Maharashtra</Text>
           </View>
         </View>
       </View>
@@ -78,15 +208,15 @@ export default function DashboardTab({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollPadding}
       >
-        {/* Backend health status badge */}
         <View style={styles.healthBanner}>
           <View style={[styles.healthDot, { backgroundColor: backendStatus === 'Connected' ? '#22C55E' : '#EF4444' }]} />
           <Text style={styles.healthText}>Backend: {backendStatus}</Text>
         </View>
 
-        {/* ── MY VEHICLES SECTION ── */}
-        <View style={styles.sectionHeader}>
+        {/* ── 1. MY VEHICLES SECTION ── */}
+        <View style={[styles.sectionHeader, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
           <Text style={styles.sectionTitle}>My Vehicles</Text>
+          <VehicleFilterDropdown selectedOption={selectedFilter} onSelectOption={setSelectedFilter} vehicles={vehicles} darkTheme={true} />
         </View>
 
         <ScrollView 
@@ -94,29 +224,83 @@ export default function DashboardTab({
           showsHorizontalScrollIndicator={false} 
           contentContainerStyle={styles.vehiclesScroll}
         >
-          {vehicles.map((v) => (
-            <View key={v.id} style={styles.vehicleCard}>
-              {/* Graphic container simulating vehicle image */}
-              <View style={styles.vehicleGraphicBox}>
-                <VehicleIcon type={v.type} />
-                <Text style={styles.vehicleTypeTag}>{v.type.toUpperCase()}</Text>
-              </View>
-              
-              <Text style={styles.vehicleName}>{v.name}</Text>
-              <Text style={styles.vehicleNumber}>{v.number}</Text>
-              
-              <View style={styles.tagsContainer}>
-                <View style={[styles.tag, { backgroundColor: '#F0FDF4' }]}>
-                  <Text style={[styles.tagText, { color: '#16A34A' }]}>● Active</Text>
-                </View>
-                <View style={[styles.tag, { backgroundColor: '#EFF6FF' }]}>
-                  <Text style={[styles.tagText, { color: '#2563EB' }]}>{v.fuel}</Text>
-                </View>
-              </View>
+          {filteredVehicles.length === 0 ? (
+            <View style={styles.emptyVehiclesBox}>
+              <Text style={styles.emptyVehiclesText}>No vehicles found in this category.</Text>
             </View>
-          ))}
+          ) : (
+            filteredVehicles.map((v) => {
+              const vehicleImage = v.images && v.images.length > 0 
+                ? { uri: v.images[0] } 
+                : v.image 
+                  ? (typeof v.image === 'string' ? { uri: v.image } : v.image) 
+                  : require('../../../assets/vehicle_placeholder.png');
 
-          {/* Add Vehicle horizontal item card */}
+              const vehicleAlert = getVehicleAlert(v.id, documents);
+              const fuelColors = getFuelBadgeColor(v.fuel);
+
+              return (
+                <TouchableOpacity 
+                  key={v.id} 
+                  style={styles.vehicleCard}
+                  onPress={() => onOpenVehicleInsights && onOpenVehicleInsights(v.id)}
+                  activeOpacity={0.9}
+                >
+                  <View style={styles.vehicleGraphicBox}>
+                    <Image 
+                      source={vehicleImage} 
+                      style={styles.vehicleCoverImage}
+                      resizeMode="cover"
+                    />
+                    <View style={[styles.cardFuelBadge, { backgroundColor: fuelColors.bg, borderColor: fuelColors.border }]}>
+                      <Text style={[styles.cardFuelBadgeText, { color: fuelColors.text }]}>{v.fuel}</Text>
+                    </View>
+                  </View>
+                
+                <Text style={styles.vehicleName}>{v.name}</Text>
+                <Text style={styles.vehicleNumber}>{v.number}</Text>
+                
+                <View style={styles.tagsContainer}>
+                  <View style={[styles.tag, { backgroundColor: '#F0FDF4' }]}>
+                    <Text style={[styles.tagText, { color: '#16A34A' }]}>● Active</Text>
+                  </View>
+                  <View style={[styles.tag, { backgroundColor: '#EFF6FF' }]}>
+                    <Text style={[styles.tagText, { color: '#2563EB' }]}>{v.fuel}</Text>
+                  </View>
+                </View>
+
+                {vehicleAlert && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      const vehicleDocs = documents.filter(d => d.vehicleId === v.id);
+                      const alertDocs = vehicleDocs
+                        .map(doc => ({ doc, days: getRemainingDays(doc.expiry) }))
+                        .filter(item => item.days <= 30)
+                        .sort((a, b) => a.days - b.days);
+
+                      if (alertDocs.length > 0) {
+                        onOpenDoc(alertDocs[0].doc.key, v.id);
+                      }
+                    }}
+                    style={[
+                      styles.vehicleAlertBadge,
+                      { 
+                        backgroundColor: vehicleAlert.bg, 
+                        borderColor: vehicleAlert.border 
+                      }
+                    ]}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.vehicleAlertBadgeText, { color: vehicleAlert.color }]}>
+                      {vehicleAlert.text}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+               </TouchableOpacity>
+             );
+           })
+          )}
+
           <TouchableOpacity 
             onPress={onAddVehicle} 
             style={styles.addVehicleCard} 
@@ -129,31 +313,7 @@ export default function DashboardTab({
           </TouchableOpacity>
         </ScrollView>
 
-        {/* ── INFORMATION HUB SECTION ── */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Information Hub</Text>
-          <TouchableOpacity onPress={onOpenInfoHub} activeOpacity={0.6}>
-            <Text style={styles.viewAllLink}>View All ❯</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.docGrid}>
-          {docCards.map((doc) => (
-            <TouchableOpacity 
-              key={doc.key} 
-              onPress={() => onOpenDoc(doc.key, '1')} 
-              style={styles.docButtonCard}
-              activeOpacity={0.85}
-            >
-              <View style={[styles.docIconCircle, { backgroundColor: doc.bg }]}>
-                <Text style={styles.docEmoji}>{doc.emoji}</Text>
-              </View>
-              <Text style={[styles.docLabel, { color: doc.color }]}>{doc.text}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* ── SERVICES SECTION ── */}
+        {/* ── 2. SERVICES SECTION ── */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Services</Text>
           <TouchableOpacity onPress={() => onOpenServices()} activeOpacity={0.6}>
@@ -169,8 +329,17 @@ export default function DashboardTab({
               style={styles.serviceButtonCard}
               activeOpacity={0.85}
             >
-              <View style={[styles.serviceGraphicBox, { backgroundColor: s.bg }]}>
-                <Text style={styles.serviceBigEmoji}>{s.emoji}</Text>
+              <View style={styles.serviceImageContainer}>
+                <Image 
+                  source={serviceImages[s.label]} 
+                  style={styles.serviceImage}
+                  resizeMode="cover"
+                />
+                <View style={[styles.serviceBadge, { backgroundColor: serviceBadges[s.label].bg }]}>
+                  <Text style={[styles.serviceBadgeText, { color: serviceBadges[s.label].color }]}>
+                    {serviceBadges[s.label].text}
+                  </Text>
+                </View>
               </View>
               <View style={styles.serviceInfo}>
                 <Text style={styles.serviceLabel}>{s.label}</Text>
@@ -179,7 +348,254 @@ export default function DashboardTab({
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* ── 3. VEHICLE TRACKER SECTION ── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Vehicle Tracker</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.valuationQuickCard}
+          onPress={() => onCheckValuation(vehicles[0]?.id || '1')}
+          activeOpacity={0.9}
+        >
+          <View style={styles.valuationQuickRow}>
+            <View style={styles.valuationIconCircle}>
+              <Text style={styles.valuationIcon}>📈</Text>
+            </View>
+            <View style={styles.valuationQuickContent}>
+              <Text style={styles.valuationQuickTitle}>Vehicle Value</Text>
+              <Text style={styles.valuationQuickDesc}>Estimate your vehicle's current resale market value.</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.valuationQuickBtn}
+              onPress={() => onCheckValuation(vehicles[0]?.id || '1')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.valuationQuickBtnText}>Check Value</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.valuationQuickCard, { marginTop: 12 }]}
+          onPress={() => onOpenExpenseTracker && onOpenExpenseTracker(vehicles[0]?.id || '1')}
+          activeOpacity={0.9}
+        >
+          <View style={styles.valuationQuickRow}>
+            <View style={[styles.valuationIconCircle, { backgroundColor: '#ECFDF5' }]}>
+              <Text style={styles.valuationIcon}>💰</Text>
+            </View>
+            <View style={styles.valuationQuickContent}>
+              <Text style={styles.valuationQuickTitle}>Expense Tracker</Text>
+              <Text style={styles.valuationQuickDesc}>Track all vehicle expenses, fuel, tolls, and maintenance costs.</Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.valuationQuickBtn, { backgroundColor: '#10B981' }]}
+              onPress={() => onOpenExpenseTracker && onOpenExpenseTracker(vehicles[0]?.id || '1')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.valuationQuickBtnText}>Open Tracker</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.valuationQuickCard, { marginTop: 12 }]}
+          onPress={() => onOpenFuelTracker && onOpenFuelTracker(vehicles[0]?.id || '1')}
+          activeOpacity={0.9}
+        >
+          <View style={styles.valuationQuickRow}>
+            <View style={[styles.valuationIconCircle, { backgroundColor: '#FEF3C7' }]}>
+              <Text style={styles.valuationIcon}>⛽</Text>
+            </View>
+            <View style={styles.valuationQuickContent}>
+              <Text style={styles.valuationQuickTitle}>Fuel & Mileage Tracker</Text>
+              <Text style={styles.valuationQuickDesc}>Monitor mileage efficiency, fuel price history, and logs.</Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.valuationQuickBtn, { backgroundColor: '#F59E0B' }]}
+              onPress={() => onOpenFuelTracker && onOpenFuelTracker(vehicles[0]?.id || '1')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.valuationQuickBtnText}>Track Fuel</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+
+        {/* ── 4. TRAFFIC CHALLANS SECTION ── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Traffic Challans</Text>
+          <TouchableOpacity onPress={() => onOpenChallan && onOpenChallan(null)} activeOpacity={0.6}>
+            <Text style={styles.viewAllLink}>View All ❯</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.challanOverviewCard}>
+          <View style={styles.challanStatsRow}>
+            <View style={styles.challanStatItem}>
+              <Text style={styles.challanStatValue}>{challanStats.pendingCount}</Text>
+              <Text style={styles.challanStatLabel}>Pending Violations</Text>
+            </View>
+            <View style={[styles.challanStatItem, styles.borderLeft]}>
+              <Text style={[styles.challanStatValue, { color: challanStats.totalFine > 0 ? '#EF4444' : '#10B981' }]}>
+                ₹{challanStats.totalFine}
+              </Text>
+              <Text style={styles.challanStatLabel}>Total Fine</Text>
+            </View>
+          </View>
+          
+          {challanStats.totalFine > 0 ? (
+            <TouchableOpacity 
+              style={styles.payChallanBtn} 
+              onPress={() => onOpenChallan && onOpenChallan(null)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.payChallanBtnText}>⚠️ Pay Pending Penalties Now</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.noChallansBadge}>
+              <Text style={styles.noChallansBadgeText}>✅ No pending violations found</Text>
+            </View>
+          )}
+        </View>
+
+        {challanStats.recentList.length > 0 && (
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.challanScrollList}
+          >
+            {challanStats.recentList.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.homeChallanCardItem}
+                onPress={() => onOpenChallan && onOpenChallan(item.vehicleId)}
+                activeOpacity={0.85}
+              >
+                <View style={styles.homeChallanTop}>
+                  <Text style={styles.homeChallanViolation}>{item.violation}</Text>
+                  <Text style={styles.homeChallanAmount}>₹{item.amount}</Text>
+                </View>
+                <Text style={styles.homeChallanLoc} numberOfLines={1}>{item.location}</Text>
+                <View style={styles.homeChallanFooter}>
+                  <View style={styles.homeChallanBadge}>
+                    <Text style={styles.homeChallanBadgeText}>{item.vehicleNumber}</Text>
+                  </View>
+                  <Text style={styles.homeChallanDate}>{item.date}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+
+        {/* ── 5. TIPS & MAINTENANCE SECTION ── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Tips & Maintenance</Text>
+          <TouchableOpacity onPress={onOpenTips} activeOpacity={0.6}>
+            <Text style={styles.viewAllLink}>View All ❯</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity 
+          style={styles.homeFeaturedCard} 
+          onPress={onOpenTips}
+          activeOpacity={0.88}
+        >
+          <Image source={require('../../../assets/services_images/service center.jpg')} style={styles.homeFeaturedImg} resizeMode="cover" />
+          <View style={styles.homeFeaturedOverlay} />
+          <View style={styles.homeFeaturedContent}>
+            <View style={styles.homeFeaturedBadge}>
+              <Text style={styles.homeFeaturedBadgeText}>🔥 MONSOON SPECIAL</Text>
+            </View>
+            <Text style={styles.homeFeaturedTitle}>Monsoon Car Care Special Checklist</Text>
+            <Text style={styles.homeFeaturedDesc} numberOfLines={1}>Ensure brakes, wipers, and tyres are ready for heavy rains...</Text>
+          </View>
+        </TouchableOpacity>
+
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.homeTipsScroll}
+        >
+          {homeMockTips.map((tip) => (
+            <TouchableOpacity 
+              key={tip.id} 
+              style={styles.homeTipCard} 
+              onPress={onOpenTips}
+              activeOpacity={0.88}
+            >
+              <Image source={tipImages[tip.imageKey]} style={styles.homeTipCardImg} resizeMode="cover" />
+              <View style={styles.homeTipCardContent}>
+                <View style={styles.homeTipCategoryBadge}>
+                  <Text style={styles.homeTipCategoryText}>{tip.category}</Text>
+                </View>
+                <Text style={styles.homeTipCardTitle} numberOfLines={2}>{tip.title}</Text>
+                <Text style={styles.homeTipCardMeta}>⏳ {tip.readTime}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </ScrollView>
+
+      {/* ── WEEKLY NOTIFICATIONS MODAL ── */}
+      <Modal visible={notifBoxOpen} transparent animationType="fade">
+        <TouchableOpacity 
+          style={styles.notifOverlay} 
+          activeOpacity={1} 
+          onPress={() => setNotifBoxOpen(false)}
+        >
+          <View style={styles.notifDropdown}>
+            <View style={styles.notifHeader}>
+              <Text style={styles.notifTitle}>Weekly Insights & Alerts</Text>
+              <TouchableOpacity onPress={() => setNotifBoxOpen(false)} style={styles.notifCloseBtn}>
+                <Text style={styles.notifCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.notifScroll} showsVerticalScrollIndicator={false}>
+              {notifications.length === 0 ? (
+                <View style={{ padding: 32, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 28, marginBottom: 8 }}>🔔</Text>
+                  <Text style={{ fontSize: 11, fontWeight: '750', color: '#64748B', textAlign: 'center' }}>
+                    No alerts or notifications yet.
+                  </Text>
+                </View>
+              ) : (
+                notifications.map((notif, index) => (
+                  <TouchableOpacity 
+                    key={index} 
+                    style={[styles.notifItem, index < notifications.length - 1 ? styles.borderBottom : null]}
+                    onPress={() => {
+                      setNotifBoxOpen(false);
+                      onNotificationClick(notif);
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.notifIconFrame}>
+                      <Text style={styles.notifIconText}>{notif.icon}</Text>
+                    </View>
+                    <View style={styles.notifItemContent}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={[
+                          styles.notifItemTitle, 
+                          notif.status === 'Unread' ? { fontWeight: '900', color: '#1E3FAA' } : null
+                        ]}>
+                          {notif.title}
+                        </Text>
+                        {notif.status === 'Unread' && (
+                          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#EF4444' }} />
+                        )}
+                      </View>
+                      <Text style={styles.notifItemBody}>{notif.description}</Text>
+                      <Text style={styles.notifItemTime}>{notif.time}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              )}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -191,7 +607,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#2563EB',
-    paddingTop: 50,
+    paddingTop: 54,
     paddingBottom: 24,
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
@@ -216,10 +632,45 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
-  headerRow: {
+  headerTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  headerRightActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 8,
+  },
+  avatarButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarCircle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  avatarText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  avatarImage: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1.5,
+    borderColor: 'white',
+  },
+  headerGreetingSection: {
     paddingHorizontal: 20,
   },
   welcomeText: {
@@ -246,10 +697,6 @@ const styles = StyleSheet.create({
     color: 'rgba(219, 234, 254, 0.75)',
     fontSize: 11,
     fontWeight: '600',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 8,
   },
   iconButton: {
     width: 38,
@@ -348,25 +795,19 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 16,
     backgroundColor: '#EFF6FF',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 12,
     position: 'relative',
+    overflow: 'hidden',
   },
-  vehicleIconContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  vehicleEmoji: {
-    fontSize: 28,
+  vehicleCoverImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 16,
   },
   vehicleTypeTag: {
     position: 'absolute',
     top: 8,
-    right: 8,
+    left: 8,
     fontSize: 9,
     fontWeight: '800',
     color: '#2563EB',
@@ -375,6 +816,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderRadius: 6,
     overflow: 'hidden',
+    zIndex: 10,
   },
   vehicleName: {
     fontSize: 14,
@@ -390,6 +832,7 @@ const styles = StyleSheet.create({
   tagsContainer: {
     flexDirection: 'row',
     gap: 6,
+    marginBottom: 4,
   },
   tag: {
     paddingVertical: 3,
@@ -399,6 +842,20 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 9,
     fontWeight: '700',
+  },
+  vehicleAlertBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 8,
+    alignSelf: 'flex-start',
+  },
+  vehicleAlertBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
   },
   addVehicleCard: {
     width: 140,
@@ -456,21 +913,35 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
-  docIconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+  docIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    overflow: 'hidden',
     marginBottom: 6,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
   },
-  docEmoji: {
-    fontSize: 18,
+  docIconImage: {
+    width: '100%',
+    height: '100%',
   },
   docLabel: {
     fontSize: 10,
     fontWeight: '700',
     textAlign: 'center',
+  },
+  docStatusBadge: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 6,
+    marginTop: 6,
+    alignSelf: 'center',
+  },
+  docStatusBadgeText: {
+    fontSize: 8,
+    fontWeight: '800',
+    textTransform: 'uppercase',
   },
   servicesGrid: {
     flexDirection: 'row',
@@ -491,13 +962,29 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
-  serviceGraphicBox: {
-    height: 72,
-    justifyContent: 'center',
-    alignItems: 'center',
+  serviceImageContainer: {
+    height: 84,
+    width: '100%',
+    position: 'relative',
+    overflow: 'hidden',
+    backgroundColor: '#F1F5F9',
   },
-  serviceBigEmoji: {
-    fontSize: 28,
+  serviceImage: {
+    width: '100%',
+    height: '100%',
+  },
+  serviceBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+  },
+  serviceBadgeText: {
+    fontSize: 8,
+    fontWeight: '800',
+    textTransform: 'uppercase',
   },
   serviceInfo: {
     padding: 10,
@@ -511,5 +998,437 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     marginTop: 2,
+  },
+  notifBadge: {
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#EF4444',
+    top: -2,
+    right: -2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#2563EB',
+  },
+  notifBadgeText: {
+    color: 'white',
+    fontSize: 8,
+    fontWeight: '900',
+  },
+  // Valuation home preview styles
+  checkValueLink: {
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderColor: '#F1F5F9',
+    paddingTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkValueLinkText: {
+    fontSize: 10,
+    color: '#2563EB',
+    fontWeight: '800',
+  },
+  valuationQuickCard: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    padding: 16,
+    marginVertical: 12,
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  valuationQuickRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  valuationIconCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  valuationIcon: {
+    fontSize: 20,
+  },
+  valuationQuickContent: {
+    flex: 1,
+  },
+  valuationQuickTitle: {
+    fontSize: 13,
+    fontWeight: '850',
+    color: '#111827',
+  },
+  valuationQuickDesc: {
+    fontSize: 10,
+    color: '#6B7280',
+    marginTop: 2,
+    fontWeight: '600',
+  },
+  valuationQuickBtn: {
+    backgroundColor: '#2563EB',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  valuationQuickBtnText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '850',
+  },
+  // Weekly Notifications Modal dropdown styling
+  notifOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notifDropdown: {
+    backgroundColor: 'white',
+    borderRadius: 24,
+    width: width - 40,
+    maxHeight: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 8,
+    overflow: 'hidden',
+  },
+  notifHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  notifTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#0F172A',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  notifCloseBtn: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notifCloseText: {
+    fontSize: 10,
+    color: '#6B7280',
+    fontWeight: '800',
+  },
+  notifScroll: {
+    paddingHorizontal: 16,
+  },
+  notifItem: {
+    flexDirection: 'row',
+    paddingVertical: 14,
+    gap: 12,
+    alignItems: 'center',
+  },
+  borderBottom: {
+    borderBottomWidth: 1,
+    borderColor: '#F1F5F9',
+  },
+  notifIconFrame: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notifIconText: {
+    fontSize: 18,
+  },
+  notifItemContent: {
+    flex: 1,
+  },
+  notifItemTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#1E293B',
+  },
+  notifItemBody: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  notifItemTime: {
+    fontSize: 9,
+    color: '#94A3B8',
+    fontWeight: '700',
+    marginTop: 4,
+  },
+
+  // Home preview tips style overrides
+  homeFeaturedCard: {
+    width: '100%',
+    height: 140,
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 16,
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginTop: 10,
+  },
+  homeFeaturedImg: {
+    width: '100%',
+    height: '100%',
+  },
+  homeFeaturedOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+  },
+  homeFeaturedContent: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 16,
+  },
+  homeFeaturedBadge: {
+    backgroundColor: '#EF4444',
+    alignSelf: 'flex-start',
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    marginBottom: 6,
+  },
+  homeFeaturedBadgeText: {
+    color: 'white',
+    fontSize: 7,
+    fontWeight: '850',
+  },
+  homeFeaturedTitle: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  homeFeaturedDesc: {
+    color: '#CBD5E1',
+    fontSize: 10,
+    marginTop: 2,
+  },
+  homeTipsScroll: {
+    gap: 12,
+    paddingBottom: 6,
+  },
+  homeTipCard: {
+    width: 200,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    overflow: 'hidden',
+    marginRight: 10,
+  },
+  homeTipCardImg: {
+    width: '100%',
+    height: 100,
+  },
+  homeTipCardContent: {
+    padding: 10,
+  },
+  homeTipCategoryBadge: {
+    backgroundColor: '#EBF5FF',
+    alignSelf: 'flex-start',
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    marginBottom: 4,
+  },
+  homeTipCategoryText: {
+    color: '#2563EB',
+    fontSize: 8,
+    fontWeight: '800',
+  },
+  homeTipCardTitle: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#1F2937',
+    lineHeight: 15,
+  },
+  homeTipCardMeta: {
+    fontSize: 9,
+    color: '#9CA3AF',
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  cardFuelBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 6,
+    borderWidth: 1,
+    zIndex: 15,
+  },
+  cardFuelBadgeText: {
+    fontSize: 8,
+    fontWeight: '850',
+    textTransform: 'uppercase',
+  },
+  emptyVehiclesBox: {
+    width: 220,
+    height: 180,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    borderColor: '#E2E8F0',
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    marginRight: 10,
+  },
+  emptyVehiclesText: {
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '600',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  challanOverviewCard: {
+    backgroundColor: 'white',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  challanStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  challanStatItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  challanStatValue: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#EF4444',
+  },
+  challanStatLabel: {
+    fontSize: 10,
+    color: '#64748B',
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  payChallanBtn: {
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FEE2E2',
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  payChallanBtnText: {
+    color: '#EF4444',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  noChallansBadge: {
+    backgroundColor: '#F0FDF4',
+    borderRadius: 12,
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  noChallansBadgeText: {
+    color: '#16A34A',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  challanScrollList: {
+    gap: 12,
+    paddingBottom: 16,
+  },
+  homeChallanCardItem: {
+    width: 220,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 14,
+    marginRight: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  homeChallanTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  homeChallanViolation: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#1E293B',
+    flex: 1,
+    marginRight: 8,
+  },
+  homeChallanAmount: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#EF4444',
+  },
+  homeChallanLoc: {
+    fontSize: 9,
+    color: '#64748B',
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  homeChallanFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderColor: '#F1F5F9',
+    paddingTop: 8,
+  },
+  homeChallanBadge: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  homeChallanBadgeText: {
+    color: '#475569',
+    fontSize: 8,
+    fontWeight: '800',
+  },
+  homeChallanDate: {
+    color: '#94A3B8',
+    fontSize: 8,
+    fontWeight: '700',
   },
 });
