@@ -44,12 +44,13 @@ const docIcons = {
 };
 
 const serviceImages = {
-  'Car Wash': require('../../../assets/services_images/car_wash.jpg'),
-  'Garage': require('../../../assets/services_images/garage.jpg'),
-  'Denting': require('../../../assets/services_images/denting&painting.jpg'),
-  'Towing': require('../../../assets/services_images/towing.jpg'),
-  'PUC Center': require('../../../assets/services_images/puc center.jpg'),
-  'Service Center': require('../../../assets/services_images/service center.jpg'),
+  car_wash: require('../../../assets/services_images/car_wash.jpg'),
+  denting: require('../../../assets/services_images/denting&painting.jpg'),
+  garage: require('../../../assets/services_images/garage.jpg'),
+  puc: require('../../../assets/services_images/puc center.jpg'),
+  service: require('../../../assets/services_images/service center.jpg'),
+  towing: require('../../../assets/services_images/towing.jpg'),
+  placeholder: require('../../../assets/vehicle_placeholder.png'),
 };
 
 const serviceBadges = {
@@ -61,14 +62,14 @@ const serviceBadges = {
   'Service Center': { text: 'Top Rated', color: '#F59E0B', bg: '#FFFBEB' },
 };
 
-export default function DashboardTab({ 
-  vehicles, 
+export default function DashboardTab({
+  vehicles,
   documents = [],
-  backendStatus, 
-  onOpenDrawer, 
-  onAddVehicle, 
-  onOpenDoc, 
-  onOpenServices, 
+  backendStatus,
+  onOpenDrawer,
+  onAddVehicle,
+  onOpenDoc,
+  onOpenServices,
   onOpenInfoHub,
   onOpenProfile,
   onOpenTips,
@@ -82,7 +83,7 @@ export default function DashboardTab({
 }) {
   const [notifBoxOpen, setNotifBoxOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('All Vehicles');
-  
+
   const [challanStats, setChallanStats] = useState({ pendingCount: 0, totalFine: 0, recentList: [] });
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function DashboardTab({
         let pendingCount = 0;
         let totalFine = 0;
         let recentList = [];
-        
+
         for (const v of vehicles) {
           const summary = await getChallanSummary(v.id);
           if (summary) {
@@ -146,12 +147,48 @@ export default function DashboardTab({
   ];
 
   const services = [
-    { label: 'Car Wash', emoji: '🫧', count: 8, color: '#06B6D4', bg: '#ECFEFF' },
-    { label: 'Garage', emoji: '🔧', count: 24, color: '#2563EB', bg: '#EFF6FF' },
-    { label: 'Denting', emoji: '🎨', count: 6, color: '#EC4899', bg: '#FDF2F8' },
-    { label: 'Towing', emoji: '🛻', count: 5, color: '#F97316', bg: '#FFF7ED' },
-    { label: 'PUC Center', emoji: '💨', count: 12, color: '#22C55E', bg: '#F0FDF4' },
-    { label: 'Service Center', emoji: '🏬', count: 9, color: '#6366F1', bg: '#EEF2FF' },
+    {
+      label: 'Car Wash',
+      imageKey: 'car_wash',
+      emoji: '🧼',
+      count: 8,
+      color: '#06B6D4',
+    },
+    {
+      label: 'Garage',
+      imageKey: 'garage',
+      emoji: '🔧',
+      count: 24,
+      color: '#2563EB',
+    },
+    {
+      label: 'Denting',
+      imageKey: 'denting',
+      emoji: '🎨',
+      count: 6,
+      color: '#EC4899',
+    },
+    {
+      label: 'Towing',
+      imageKey: 'towing',
+      emoji: '🚗',
+      count: 5,
+      color: '#F97316',
+    },
+    {
+      label: 'PUC Center',
+      imageKey: 'puc',
+      emoji: '📋',
+      count: 12,
+      color: '#22C55E',
+    },
+    {
+      label: 'Service Center',
+      imageKey: 'service',
+      emoji: '🏢',
+      count: 9,
+      color: '#6366F1',
+    },
   ];
 
   return (
@@ -203,8 +240,8 @@ export default function DashboardTab({
         </View>
       </View>
 
-      <ScrollView 
-        style={styles.scrollBody} 
+      <ScrollView
+        style={styles.scrollBody}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollPadding}
       >
@@ -219,9 +256,9 @@ export default function DashboardTab({
           <VehicleFilterDropdown selectedOption={selectedFilter} onSelectOption={setSelectedFilter} vehicles={vehicles} darkTheme={true} />
         </View>
 
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.vehiclesScroll}
         >
           {filteredVehicles.length === 0 ? (
@@ -230,25 +267,25 @@ export default function DashboardTab({
             </View>
           ) : (
             filteredVehicles.map((v) => {
-              const vehicleImage = v.images && v.images.length > 0 
-                ? { uri: v.images[0] } 
-                : v.image 
-                  ? (typeof v.image === 'string' ? { uri: v.image } : v.image) 
+              const vehicleImage = v.images && v.images.length > 0
+                ? { uri: v.images[0] }
+                : v.image
+                  ? (typeof v.image === 'string' ? { uri: v.image } : v.image)
                   : require('../../../assets/vehicle_placeholder.png');
 
               const vehicleAlert = getVehicleAlert(v.id, documents);
               const fuelColors = getFuelBadgeColor(v.fuel);
 
               return (
-                <TouchableOpacity 
-                  key={v.id} 
+                <TouchableOpacity
+                  key={v.id}
                   style={styles.vehicleCard}
                   onPress={() => onOpenVehicleInsights && onOpenVehicleInsights(v.id)}
                   activeOpacity={0.9}
                 >
                   <View style={styles.vehicleGraphicBox}>
-                    <Image 
-                      source={vehicleImage} 
+                    <Image
+                      source={vehicleImage}
                       style={styles.vehicleCoverImage}
                       resizeMode="cover"
                     />
@@ -256,54 +293,54 @@ export default function DashboardTab({
                       <Text style={[styles.cardFuelBadgeText, { color: fuelColors.text }]}>{v.fuel}</Text>
                     </View>
                   </View>
-                
-                <Text style={styles.vehicleName}>{v.name}</Text>
-                <Text style={styles.vehicleNumber}>{v.number}</Text>
-                
-                <View style={styles.tagsContainer}>
-                  <View style={[styles.tag, { backgroundColor: '#F0FDF4' }]}>
-                    <Text style={[styles.tagText, { color: '#16A34A' }]}>● Active</Text>
-                  </View>
-                  <View style={[styles.tag, { backgroundColor: '#EFF6FF' }]}>
-                    <Text style={[styles.tagText, { color: '#2563EB' }]}>{v.fuel}</Text>
-                  </View>
-                </View>
 
-                {vehicleAlert && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      const vehicleDocs = documents.filter(d => d.vehicleId === v.id);
-                      const alertDocs = vehicleDocs
-                        .map(doc => ({ doc, days: getRemainingDays(doc.expiry) }))
-                        .filter(item => item.days <= 30)
-                        .sort((a, b) => a.days - b.days);
+                  <Text style={styles.vehicleName}>{v.name}</Text>
+                  <Text style={styles.vehicleNumber}>{v.number}</Text>
 
-                      if (alertDocs.length > 0) {
-                        onOpenDoc(alertDocs[0].doc.key, v.id);
-                      }
-                    }}
-                    style={[
-                      styles.vehicleAlertBadge,
-                      { 
-                        backgroundColor: vehicleAlert.bg, 
-                        borderColor: vehicleAlert.border 
-                      }
-                    ]}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.vehicleAlertBadgeText, { color: vehicleAlert.color }]}>
-                      {vehicleAlert.text}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-               </TouchableOpacity>
-             );
-           })
+                  <View style={styles.tagsContainer}>
+                    <View style={[styles.tag, { backgroundColor: '#F0FDF4' }]}>
+                      <Text style={[styles.tagText, { color: '#16A34A' }]}>● Active</Text>
+                    </View>
+                    <View style={[styles.tag, { backgroundColor: '#EFF6FF' }]}>
+                      <Text style={[styles.tagText, { color: '#2563EB' }]}>{v.fuel}</Text>
+                    </View>
+                  </View>
+
+                  {vehicleAlert && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const vehicleDocs = documents.filter(d => d.vehicleId === v.id);
+                        const alertDocs = vehicleDocs
+                          .map(doc => ({ doc, days: getRemainingDays(doc.expiry) }))
+                          .filter(item => item.days <= 30)
+                          .sort((a, b) => a.days - b.days);
+
+                        if (alertDocs.length > 0) {
+                          onOpenDoc(alertDocs[0].doc.key, v.id);
+                        }
+                      }}
+                      style={[
+                        styles.vehicleAlertBadge,
+                        {
+                          backgroundColor: vehicleAlert.bg,
+                          borderColor: vehicleAlert.border
+                        }
+                      ]}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.vehicleAlertBadgeText, { color: vehicleAlert.color }]}>
+                        {vehicleAlert.text}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </TouchableOpacity>
+              );
+            })
           )}
 
-          <TouchableOpacity 
-            onPress={onAddVehicle} 
-            style={styles.addVehicleCard} 
+          <TouchableOpacity
+            onPress={onAddVehicle}
+            style={styles.addVehicleCard}
             activeOpacity={0.8}
           >
             <View style={styles.plusCircle}>
@@ -323,15 +360,15 @@ export default function DashboardTab({
 
         <View style={styles.servicesGrid}>
           {services.map((s) => (
-            <TouchableOpacity 
-              key={s.label} 
-              onPress={() => onOpenServices(s.label)} 
+            <TouchableOpacity
+              key={s.label}
+              onPress={() => onOpenServices(s.label)}
               style={styles.serviceButtonCard}
               activeOpacity={0.85}
             >
               <View style={styles.serviceImageContainer}>
-                <Image 
-                  source={serviceImages[s.label]} 
+                <Image
+                  source={serviceImages[s.imageKey] || serviceImages.placeholder}
                   style={styles.serviceImage}
                   resizeMode="cover"
                 />
@@ -444,10 +481,10 @@ export default function DashboardTab({
               <Text style={styles.challanStatLabel}>Total Fine</Text>
             </View>
           </View>
-          
+
           {challanStats.totalFine > 0 ? (
-            <TouchableOpacity 
-              style={styles.payChallanBtn} 
+            <TouchableOpacity
+              style={styles.payChallanBtn}
               onPress={() => onOpenChallan && onOpenChallan(null)}
               activeOpacity={0.8}
             >
@@ -461,8 +498,8 @@ export default function DashboardTab({
         </View>
 
         {challanStats.recentList.length > 0 && (
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.challanScrollList}
           >
@@ -497,8 +534,8 @@ export default function DashboardTab({
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
-          style={styles.homeFeaturedCard} 
+        <TouchableOpacity
+          style={styles.homeFeaturedCard}
           onPress={onOpenTips}
           activeOpacity={0.88}
         >
@@ -513,15 +550,15 @@ export default function DashboardTab({
           </View>
         </TouchableOpacity>
 
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.homeTipsScroll}
         >
           {homeMockTips.map((tip) => (
-            <TouchableOpacity 
-              key={tip.id} 
-              style={styles.homeTipCard} 
+            <TouchableOpacity
+              key={tip.id}
+              style={styles.homeTipCard}
               onPress={onOpenTips}
               activeOpacity={0.88}
             >
@@ -540,9 +577,9 @@ export default function DashboardTab({
 
       {/* ── WEEKLY NOTIFICATIONS MODAL ── */}
       <Modal visible={notifBoxOpen} transparent animationType="fade">
-        <TouchableOpacity 
-          style={styles.notifOverlay} 
-          activeOpacity={1} 
+        <TouchableOpacity
+          style={styles.notifOverlay}
+          activeOpacity={1}
           onPress={() => setNotifBoxOpen(false)}
         >
           <View style={styles.notifDropdown}>
@@ -562,8 +599,8 @@ export default function DashboardTab({
                 </View>
               ) : (
                 notifications.map((notif, index) => (
-                  <TouchableOpacity 
-                    key={index} 
+                  <TouchableOpacity
+                    key={index}
                     style={[styles.notifItem, index < notifications.length - 1 ? styles.borderBottom : null]}
                     onPress={() => {
                       setNotifBoxOpen(false);
@@ -577,7 +614,7 @@ export default function DashboardTab({
                     <View style={styles.notifItemContent}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={[
-                          styles.notifItemTitle, 
+                          styles.notifItemTitle,
                           notif.status === 'Unread' ? { fontWeight: '900', color: '#1E3FAA' } : null
                         ]}>
                           {notif.title}
@@ -963,11 +1000,12 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   serviceImageContainer: {
-    height: 84,
     width: '100%',
-    position: 'relative',
+    height: 135,
     overflow: 'hidden',
-    backgroundColor: '#F1F5F9',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    backgroundColor: '#F3F4F6',
   },
   serviceImage: {
     width: '100%',
