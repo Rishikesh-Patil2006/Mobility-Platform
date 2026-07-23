@@ -24,7 +24,7 @@ const { width, height } = Dimensions.get('window');
 // Local icon imports for article detail preview mapping
 const serviceImages = {
   car_wash: require('../../../assets/services_images/car_wash.jpg'),
-  denting: require('../../../assets/services_images/denting&painting.jpg'),
+  denting: require('../../../assets/services_images/denting_painting.jpg'),
   garage: require('../../../assets/services_images/garage.jpg'),
   puc: require('../../../assets/services_images/puc center.jpg'),
   service: require('../../../assets/services_images/service center.jpg'),

@@ -42,233 +42,233 @@ const defaultVehicles = [
 ];
 
 const initialDocuments = [
-  { 
-    vehicleId: '1', 
-    key: 'puc', 
-    label: 'PUC Certificate', 
-    emoji: '🟢', 
-    status: 'Valid', 
-    expiry: 'Dec 31, 2025', 
-    uploadDate: 'Jan 15, 2025', 
-    verified: true, 
+  {
+    vehicleId: '1',
+    key: 'puc',
+    label: 'PUC Certificate',
+    emoji: '🟢',
+    status: 'Valid',
+    expiry: 'Dec 31, 2025',
+    uploadDate: 'Jan 15, 2025',
+    verified: true,
     fields: [
-      { l: 'Vehicle Number', v: 'MH-19-AB-1234' }, 
-      { l: 'Owner Name', v: 'Rushikesh Patil' }, 
-      { l: 'PUC Number', v: 'PUC/2024/MH19/78542' }, 
-      { l: 'Issue Date', v: 'Jan 15, 2025' }, 
-      { l: 'Expiry Date', v: 'Dec 31, 2025' }, 
+      { l: 'Vehicle Number', v: 'MH-19-AB-1234' },
+      { l: 'Owner Name', v: 'Rushikesh Patil' },
+      { l: 'PUC Number', v: 'PUC/2024/MH19/78542' },
+      { l: 'Issue Date', v: 'Jan 15, 2025' },
+      { l: 'Expiry Date', v: 'Dec 31, 2025' },
       { l: 'Testing Center', v: 'Jalgaon PUC Center, NH-6' }
     ],
     note: 'Valid until 31 December 2025'
   },
-  { 
-    vehicleId: '1', 
-    key: 'rc', 
-    label: 'RC Book', 
-    emoji: '🔵', 
-    status: 'Valid', 
-    expiry: 'Apr 20, 2037', 
-    uploadDate: 'Apr 20, 2022', 
-    verified: true, 
+  {
+    vehicleId: '1',
+    key: 'rc',
+    label: 'RC Book',
+    emoji: '🔵',
+    status: 'Valid',
+    expiry: 'Apr 20, 2037',
+    uploadDate: 'Apr 20, 2022',
+    verified: true,
     fields: [
-      { l: 'Registration No.', v: 'MH-19-AB-1234' }, 
-      { l: 'Owner Name', v: 'Rushikesh Patil' }, 
-      { l: 'Vehicle Class', v: 'Motor Car (LMV)' }, 
-      { l: 'Engine Number', v: 'L15Z3A123456' }, 
-      { l: 'Chassis Number', v: 'MHHRH2G5MCN123456' }, 
-      { l: 'Reg. Date', v: 'Apr 20, 2022' }, 
+      { l: 'Registration No.', v: 'MH-19-AB-1234' },
+      { l: 'Owner Name', v: 'Rushikesh Patil' },
+      { l: 'Vehicle Class', v: 'Motor Car (LMV)' },
+      { l: 'Engine Number', v: 'L15Z3A123456' },
+      { l: 'Chassis Number', v: 'MHHRH2G5MCN123456' },
+      { l: 'Reg. Date', v: 'Apr 20, 2022' },
       { l: 'Reg. Validity', v: 'Apr 20, 2037' }
     ],
     note: 'Valid until 20 April 2037'
   },
-  { 
-    vehicleId: '1', 
-    key: 'driving-license', 
-    label: 'Driving License', 
-    emoji: '🟣', 
-    status: 'Valid', 
-    expiry: 'Sep 11, 2040', 
-    uploadDate: 'Sep 12, 2022', 
-    verified: true, 
+  {
+    vehicleId: '1',
+    key: 'driving-license',
+    label: 'Driving License',
+    emoji: '🟣',
+    status: 'Valid',
+    expiry: 'Sep 11, 2040',
+    uploadDate: 'Sep 12, 2022',
+    verified: true,
     fields: [
-      { l: 'License Number', v: 'MH1920220012345' }, 
-      { l: 'Holder Name', v: 'Rushikesh Patil' }, 
-      { l: 'Date of Birth', v: 'Sep 12, 1998' }, 
-      { l: 'Issue Date', v: 'Sep 12, 2022' }, 
-      { l: 'Expiry Date', v: 'Sep 11, 2040' }, 
+      { l: 'License Number', v: 'MH1920220012345' },
+      { l: 'Holder Name', v: 'Rushikesh Patil' },
+      { l: 'Date of Birth', v: 'Sep 12, 1998' },
+      { l: 'Issue Date', v: 'Sep 12, 2022' },
+      { l: 'Expiry Date', v: 'Sep 11, 2040' },
       { l: 'Vehicle Class', v: 'MC, LMV' }
     ],
     note: 'Valid until 11 September 2040'
   },
-  { 
-    vehicleId: '1', 
-    key: 'insurance', 
-    label: 'Insurance Policy', 
-    emoji: '🟡', 
-    status: 'Expiring Soon', 
-    expiry: 'Jul 25, 2026', 
-    uploadDate: 'Jul 25, 2025', 
-    verified: true, 
+  {
+    vehicleId: '1',
+    key: 'insurance',
+    label: 'Insurance Policy',
+    emoji: '🟡',
+    status: 'Expiring Soon',
+    expiry: 'Jul 25, 2026',
+    uploadDate: 'Jul 25, 2025',
+    verified: true,
     fields: [
-      { l: 'Policy Number', v: 'OD/2024/MH/00123456' }, 
-      { l: 'Insurer Company', v: 'Bajaj Allianz General' }, 
-      { l: 'Policy Type', v: 'Comprehensive' }, 
-      { l: 'Issue Date', v: 'Jul 25, 2025' }, 
-      { l: 'Expiry Date', v: 'Jul 25, 2026' }, 
+      { l: 'Policy Number', v: 'OD/2024/MH/00123456' },
+      { l: 'Insurer Company', v: 'Bajaj Allianz General' },
+      { l: 'Policy Type', v: 'Comprehensive' },
+      { l: 'Issue Date', v: 'Jul 25, 2025' },
+      { l: 'Expiry Date', v: 'Jul 25, 2026' },
       { l: 'Coverage IDV', v: '₹8,00,000' }
     ],
     note: 'Expires in 5 days'
   },
-  { 
-    vehicleId: '2', 
-    key: 'puc', 
-    label: 'PUC Certificate', 
-    emoji: '🔴', 
-    status: 'Expired', 
-    expiry: 'Jan 10, 2025', 
-    uploadDate: 'Jan 10, 2024', 
-    verified: false, 
+  {
+    vehicleId: '2',
+    key: 'puc',
+    label: 'PUC Certificate',
+    emoji: '🔴',
+    status: 'Expired',
+    expiry: 'Jan 10, 2025',
+    uploadDate: 'Jan 10, 2024',
+    verified: false,
     fields: [
-      { l: 'Vehicle Number', v: 'MH-19-CD-5678' }, 
-      { l: 'Owner Name', v: 'Rushikesh Patil' }, 
-      { l: 'PUC Number', v: 'PUC/2023/MH19/45231' }, 
-      { l: 'Issue Date', v: 'Jan 10, 2024' }, 
-      { l: 'Expiry Date', v: 'Jan 10, 2025' }, 
+      { l: 'Vehicle Number', v: 'MH-19-CD-5678' },
+      { l: 'Owner Name', v: 'Rushikesh Patil' },
+      { l: 'PUC Number', v: 'PUC/2023/MH19/45231' },
+      { l: 'Issue Date', v: 'Jan 10, 2024' },
+      { l: 'Expiry Date', v: 'Jan 10, 2025' },
       { l: 'Testing Center', v: 'Jalgaon PUC Center, NH-6' }
     ],
     note: 'Expired on 10 January 2025'
   },
-  { 
-    vehicleId: '2', 
-    key: 'rc', 
-    label: 'RC Book', 
-    emoji: '🔵', 
-    status: 'Valid', 
-    expiry: 'Mar 10, 2036', 
-    uploadDate: 'Mar 10, 2021', 
-    verified: true, 
+  {
+    vehicleId: '2',
+    key: 'rc',
+    label: 'RC Book',
+    emoji: '🔵',
+    status: 'Valid',
+    expiry: 'Mar 10, 2036',
+    uploadDate: 'Mar 10, 2021',
+    verified: true,
     fields: [
-      { l: 'Registration No.', v: 'MH-19-CD-5678' }, 
-      { l: 'Owner Name', v: 'Rushikesh Patil' }, 
-      { l: 'Vehicle Class', v: 'Scooter (MCWG)' }, 
-      { l: 'Engine Number', v: 'JF50E8123456' }, 
-      { l: 'Chassis Number', v: 'ME4JF503MC8123456' }, 
-      { l: 'Reg. Date', v: 'Mar 10, 2021' }, 
+      { l: 'Registration No.', v: 'MH-19-CD-5678' },
+      { l: 'Owner Name', v: 'Rushikesh Patil' },
+      { l: 'Vehicle Class', v: 'Scooter (MCWG)' },
+      { l: 'Engine Number', v: 'JF50E8123456' },
+      { l: 'Chassis Number', v: 'ME4JF503MC8123456' },
+      { l: 'Reg. Date', v: 'Mar 10, 2021' },
       { l: 'Reg. Validity', v: 'Mar 10, 2036' }
     ],
     note: 'Valid until 10 March 2036'
   },
-  { 
-    vehicleId: '2', 
-    key: 'driving-license', 
-    label: 'Driving License', 
-    emoji: '🟣', 
-    status: 'Valid', 
-    expiry: 'Sep 11, 2040', 
-    uploadDate: 'Sep 12, 2022', 
-    verified: true, 
+  {
+    vehicleId: '2',
+    key: 'driving-license',
+    label: 'Driving License',
+    emoji: '🟣',
+    status: 'Valid',
+    expiry: 'Sep 11, 2040',
+    uploadDate: 'Sep 12, 2022',
+    verified: true,
     fields: [
-      { l: 'License Number', v: 'MH1920220012345' }, 
-      { l: 'Holder Name', v: 'Rushikesh Patil' }, 
-      { l: 'Date of Birth', v: 'Sep 12, 1998' }, 
-      { l: 'Issue Date', v: 'Sep 12, 2022' }, 
-      { l: 'Expiry Date', v: 'Sep 11, 2040' }, 
+      { l: 'License Number', v: 'MH1920220012345' },
+      { l: 'Holder Name', v: 'Rushikesh Patil' },
+      { l: 'Date of Birth', v: 'Sep 12, 1998' },
+      { l: 'Issue Date', v: 'Sep 12, 2022' },
+      { l: 'Expiry Date', v: 'Sep 11, 2040' },
       { l: 'Vehicle Class', v: 'MC, LMV' }
     ],
     note: 'Valid until 11 September 2040'
   },
-  { 
-    vehicleId: '2', 
-    key: 'insurance', 
-    label: 'Insurance Policy', 
-    emoji: '🟢', 
-    status: 'Valid', 
-    expiry: 'Nov 30, 2026', 
-    uploadDate: 'Nov 30, 2025', 
-    verified: true, 
+  {
+    vehicleId: '2',
+    key: 'insurance',
+    label: 'Insurance Policy',
+    emoji: '🟢',
+    status: 'Valid',
+    expiry: 'Nov 30, 2026',
+    uploadDate: 'Nov 30, 2025',
+    verified: true,
     fields: [
-      { l: 'Policy Number', v: 'OD/2024/MH/00987654' }, 
-      { l: 'Insurer Company', v: 'HDFC ERGO General' }, 
-      { l: 'Policy Type', v: 'Third Party' }, 
-      { l: 'Issue Date', v: 'Nov 30, 2025' }, 
-      { l: 'Expiry Date', v: 'Nov 30, 2026' }, 
+      { l: 'Policy Number', v: 'OD/2024/MH/00987654' },
+      { l: 'Insurer Company', v: 'HDFC ERGO General' },
+      { l: 'Policy Type', v: 'Third Party' },
+      { l: 'Issue Date', v: 'Nov 30, 2025' },
+      { l: 'Expiry Date', v: 'Nov 30, 2026' },
       { l: 'Coverage IDV', v: '₹2,00,000' }
     ],
     note: 'Valid until 30 November 2026'
   },
-  { 
-    vehicleId: '3', 
-    key: 'puc', 
-    label: 'PUC Certificate', 
-    emoji: '🟢', 
-    status: 'Valid', 
-    expiry: 'Feb 28, 2026', 
-    uploadDate: 'Feb 28, 2025', 
-    verified: true, 
+  {
+    vehicleId: '3',
+    key: 'puc',
+    label: 'PUC Certificate',
+    emoji: '🟢',
+    status: 'Valid',
+    expiry: 'Feb 28, 2026',
+    uploadDate: 'Feb 28, 2025',
+    verified: true,
     fields: [
-      { l: 'Vehicle Number', v: 'MH-19-EF-9012' }, 
-      { l: 'Owner Name', v: 'Rushikesh Patil' }, 
-      { l: 'PUC Number', v: 'PUC/2025/MH19/99871' }, 
-      { l: 'Issue Date', v: 'Feb 28, 2025' }, 
-      { l: 'Expiry Date', v: 'Feb 28, 2026' }, 
+      { l: 'Vehicle Number', v: 'MH-19-EF-9012' },
+      { l: 'Owner Name', v: 'Rushikesh Patil' },
+      { l: 'PUC Number', v: 'PUC/2025/MH19/99871' },
+      { l: 'Issue Date', v: 'Feb 28, 2025' },
+      { l: 'Expiry Date', v: 'Feb 28, 2026' },
       { l: 'Testing Center', v: 'Jalgaon PUC Center, NH-6' }
     ],
     note: 'Valid until 28 February 2026'
   },
-  { 
-    vehicleId: '3', 
-    key: 'rc', 
-    label: 'RC Book', 
-    emoji: '🔵', 
-    status: 'Valid', 
-    expiry: 'Jun 15, 2038', 
-    uploadDate: 'Jun 15, 2023', 
-    verified: true, 
+  {
+    vehicleId: '3',
+    key: 'rc',
+    label: 'RC Book',
+    emoji: '🔵',
+    status: 'Valid',
+    expiry: 'Jun 15, 2038',
+    uploadDate: 'Jun 15, 2023',
+    verified: true,
     fields: [
-      { l: 'Registration No.', v: 'MH-19-EF-9012' }, 
-      { l: 'Owner Name', v: 'Rushikesh Patil' }, 
-      { l: 'Vehicle Class', v: 'Motor Car (EV)' }, 
-      { l: 'Engine Number', v: 'EVHCN123456' }, 
-      { l: 'Chassis Number', v: 'MALE2BKA1PC123456' }, 
-      { l: 'Reg. Date', v: 'Jun 15, 2023' }, 
+      { l: 'Registration No.', v: 'MH-19-EF-9012' },
+      { l: 'Owner Name', v: 'Rushikesh Patil' },
+      { l: 'Vehicle Class', v: 'Motor Car (EV)' },
+      { l: 'Engine Number', v: 'EVHCN123456' },
+      { l: 'Chassis Number', v: 'MALE2BKA1PC123456' },
+      { l: 'Reg. Date', v: 'Jun 15, 2023' },
       { l: 'Reg. Validity', v: 'Jun 15, 2038' }
     ],
     note: 'Valid until 15 June 2038'
   },
-  { 
-    vehicleId: '3', 
-    key: 'driving-license', 
-    label: 'Driving License', 
-    emoji: '🟣', 
-    status: 'Valid', 
-    expiry: 'Sep 11, 2040', 
-    uploadDate: 'Sep 12, 2022', 
-    verified: true, 
+  {
+    vehicleId: '3',
+    key: 'driving-license',
+    label: 'Driving License',
+    emoji: '🟣',
+    status: 'Valid',
+    expiry: 'Sep 11, 2040',
+    uploadDate: 'Sep 12, 2022',
+    verified: true,
     fields: [
-      { l: 'License Number', v: 'MH1920220012345' }, 
-      { l: 'Holder Name', v: 'Rushikesh Patil' }, 
-      { l: 'Date of Birth', v: 'Sep 12, 1998' }, 
-      { l: 'Issue Date', v: 'Sep 12, 2022' }, 
-      { l: 'Expiry Date', v: 'Sep 11, 2040' }, 
+      { l: 'License Number', v: 'MH1920220012345' },
+      { l: 'Holder Name', v: 'Rushikesh Patil' },
+      { l: 'Date of Birth', v: 'Sep 12, 1998' },
+      { l: 'Issue Date', v: 'Sep 12, 2022' },
+      { l: 'Expiry Date', v: 'Sep 11, 2040' },
       { l: 'Vehicle Class', v: 'MC, LMV' }
     ],
     note: 'Valid until 11 September 2040'
   },
-  { 
-    vehicleId: '3', 
-    key: 'insurance', 
-    label: 'Insurance Policy', 
-    emoji: '🟢', 
-    status: 'Valid', 
-    expiry: 'Mar 15, 2027', 
-    uploadDate: 'Mar 15, 2026', 
-    verified: true, 
+  {
+    vehicleId: '3',
+    key: 'insurance',
+    label: 'Insurance Policy',
+    emoji: '🟢',
+    status: 'Valid',
+    expiry: 'Mar 15, 2027',
+    uploadDate: 'Mar 15, 2026',
+    verified: true,
     fields: [
-      { l: 'Policy Number', v: 'OD/2025/MH/00456789' }, 
-      { l: 'Insurer Company', v: 'Tata AIG General' }, 
-      { l: 'Policy Type', v: 'Comprehensive (EV)' }, 
-      { l: 'Issue Date', v: 'Mar 15, 2026' }, 
-      { l: 'Expiry Date', v: 'Mar 15, 2027' }, 
+      { l: 'Policy Number', v: 'OD/2025/MH/00456789' },
+      { l: 'Insurer Company', v: 'Tata AIG General' },
+      { l: 'Policy Type', v: 'Comprehensive (EV)' },
+      { l: 'Issue Date', v: 'Mar 15, 2026' },
+      { l: 'Expiry Date', v: 'Mar 15, 2027' },
       { l: 'Coverage IDV', v: '₹12,00,000' }
     ],
     note: 'Valid until 15 March 2027'
@@ -361,7 +361,7 @@ function AboutScreen({ onBack }) {
           <Text style={styles.aboutLogoText}>RoadMate</Text>
           <Text style={styles.aboutVersionText}>Version 1.0.0</Text>
         </View>
-        
+
         <View style={styles.aboutDescContainer}>
           <Text style={styles.aboutDescText}>
             Roadmate is your all-in-one vehicle management and mobility platform. Manage your vehicles, documents, nearby services, maintenance tips, and bookings from one place.
@@ -410,7 +410,7 @@ export default function CustomerDashboardScreen({ navigation }) {
   useEffect(() => {
     saveDocumentsToStorage(documents);
   }, [documents]);
-  
+
   // Tips & Maintenance States
   const [bookmarkedTips, setBookmarkedTips] = useState([]);
   const [bookmarkedVideos, setBookmarkedVideos] = useState([]);
@@ -419,13 +419,13 @@ export default function CustomerDashboardScreen({ navigation }) {
   const [recentlyViewedTips, setRecentlyViewedTips] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  
+
   // Notification center state
   const [notifications, setNotifications] = useState([]);
-  
+
   // Valuation pre-fill state
   const [valuationVehicleId, setValuationVehicleId] = useState(null);
-  
+
   // Detail screen scroll section state
   const [detailInitialSection, setDetailInitialSection] = useState(null); // null | 'info' | 'activity'
 
@@ -467,7 +467,7 @@ export default function CustomerDashboardScreen({ navigation }) {
   const handleNotificationClick = useCallback((notif) => {
     // Mark as Read
     setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, status: 'Read' } : n));
-    
+
     // Open document
     setTab('personalized');
     setScreen('doc');
@@ -489,25 +489,25 @@ export default function CustomerDashboardScreen({ navigation }) {
   }, []);
 
   const handleBookmarkTipToggle = useCallback((tipId) => {
-    setBookmarkedTips(prev => 
+    setBookmarkedTips(prev =>
       prev.includes(tipId) ? prev.filter(id => id !== tipId) : [...prev, tipId]
     );
   }, []);
 
   const handleBookmarkVideoToggle = useCallback((vidId) => {
-    setBookmarkedVideos(prev => 
+    setBookmarkedVideos(prev =>
       prev.includes(vidId) ? prev.filter(id => id !== vidId) : [...prev, vidId]
     );
   }, []);
 
   const handleLikeTipToggle = useCallback((tipId) => {
-    setLikedTips(prev => 
+    setLikedTips(prev =>
       prev.includes(tipId) ? prev.filter(id => id !== tipId) : [...prev, tipId]
     );
   }, []);
 
   const handleLikeVideoToggle = useCallback((vidId) => {
-    setLikedVideos(prev => 
+    setLikedVideos(prev =>
       prev.includes(vidId) ? prev.filter(id => id !== vidId) : [...prev, vidId]
     );
   }, []);
@@ -537,17 +537,17 @@ export default function CustomerDashboardScreen({ navigation }) {
 
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [navProvider, setNavProvider] = useState(null);
-  
+
   const [savedProviderIds, setSavedProviderIds] = useState([]);
-  
+
   const toggleSaveProvider = useCallback((providerId) => {
-    setSavedProviderIds(prev => 
-      prev.includes(providerId) 
-        ? prev.filter(id => id !== providerId) 
+    setSavedProviderIds(prev =>
+      prev.includes(providerId)
+        ? prev.filter(id => id !== providerId)
         : [...prev, providerId]
     );
   }, []);
-  
+
   // Drawer state & animation
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerX = useRef(new Animated.Value(-285)).current;
@@ -559,7 +559,7 @@ export default function CustomerDashboardScreen({ navigation }) {
   // Favorites state
   const [favorites, setFavorites] = useState([]);
   const loadFavorites = useCallback(async () => {
-    try { const data = await getFavorites(); setFavorites(data); } catch(e) { setFavorites([]); }
+    try { const data = await getFavorites(); setFavorites(data); } catch (e) { setFavorites([]); }
   }, []);
   useEffect(() => { loadFavorites(); }, [loadFavorites]);
 
@@ -647,24 +647,37 @@ export default function CustomerDashboardScreen({ navigation }) {
   // Home → My Vehicles → Services → Vehicle Hub → Tips & Maintenance
   // → Vehicle Tracker (dropdown) → Favorites → Driving License
   // → Settings → Support & Help → About Roadmate → Logout
+  const drawerIcons = {
+    home: require('../../assets/drawer_icons/home.png'),
+    vehicles: require('../../assets/drawer_icons/my_vehicles.png'),
+    services: require('../../assets/drawer_icons/services.png'),
+    tips: require('../../assets/drawer_icons/tips_maintainance.png'),
+    tracker: require('../../assets/drawer_icons/vehicle_tracker.png'),
+    favorites: require('../../assets/drawer_icons/favorites.png'),
+    license: require('../../assets/drawer_icons/driving_license.png'),
+    settings: require('../../assets/drawer_icons/settings.png'),
+    support: require('../../assets/drawer_icons/support_help.png'),
+    about: require('../../assets/drawer_icons/about_roadmate.png'),
+    logout: require('../../assets/drawer_icons/logout.png'),
+  };
   const drawerLinks = [
     {
       id: 'home',
-      icon: '🏠',
+      icon: drawerIcons.home,
       label: 'Home',
       isActive: tab === 'home' && screen === null,
       action: () => { closeDrawer(); setTab('home'); setScreen(null); }
     },
     {
       id: 'vehicles',
-      icon: '🚗',
+      icon: drawerIcons.vehicles,
       label: 'My Vehicles',
       isActive: tab === 'personalized' && screen === null,
       action: () => { closeDrawer(); setTab('personalized'); setScreen(null); }
     },
     {
       id: 'services',
-      icon: '🛠️',
+      icon: drawerIcons.services,
       label: 'Services',
       isActive: tab === 'services' && screen === null,
       action: () => { closeDrawer(); setTab('services'); setScreen(null); }
@@ -672,7 +685,7 @@ export default function CustomerDashboardScreen({ navigation }) {
     // Standalone Vehicle Hub removed from drawer
     {
       id: 'tips',
-      icon: '🎥',
+      icon: drawerIcons.tips,
       label: 'Tips & Maintenance',
       isActive: screen === 'tips',
       action: () => { closeDrawer(); setScreen('tips'); }
@@ -681,42 +694,42 @@ export default function CustomerDashboardScreen({ navigation }) {
     { id: '__tracker_dropdown__', isDropdown: true },
     {
       id: 'favorites',
-      icon: '❤️',
+      icon: drawerIcons.favorites,
       label: 'Favorites',
       isActive: screen === 'favorites',
       action: () => { closeDrawer(); loadFavorites(); setScreen('favorites'); }
     },
     {
       id: 'license',
-      icon: '🪪',
+      icon: drawerIcons.license,
       label: 'Driving License',
       isActive: screen === 'driving-license',
       action: () => { closeDrawer(); setScreen('driving-license'); }
     },
     {
       id: 'settings',
-      icon: '⚙️',
+      icon: drawerIcons.settings,
       label: 'Settings',
       isActive: screen === 'settings',
       action: () => { closeDrawer(); setScreen('settings'); }
     },
     {
       id: 'support',
-      icon: '🛟',
+      icon: drawerIcons.support,
       label: 'Support & Help',
       isActive: screen === 'support',
       action: () => { closeDrawer(); setScreen('support'); }
     },
     {
       id: 'about',
-      icon: 'ℹ️',
+      icon: drawerIcons.about,
       label: 'About Roadmate',
       isActive: screen === 'about',
       action: () => { closeDrawer(); setScreen('about'); }
     },
     {
       id: 'logout',
-      icon: '🚪',
+      icon: drawerIcons.logout,
       label: 'Logout',
       isActive: false,
       action: () => {
@@ -735,25 +748,25 @@ export default function CustomerDashboardScreen({ navigation }) {
 
   // Vehicle Tracker sub-items (shown when dropdown is open)
   const trackerSubItems = [
-    { id: 'vt-value',   icon: '📈', label: 'Vehicle Value',   action: () => { closeDrawer(); setValuationVehicleId(null); setScreen('valuation'); } },
+    { id: 'vt-value', icon: '📈', label: 'Vehicle Value', action: () => { closeDrawer(); setValuationVehicleId(null); setScreen('valuation'); } },
     { id: 'vt-expense', icon: '💰', label: 'Expense Tracker', action: () => { closeDrawer(); setExpenseVehicleId(null); setScreen('expenses'); } },
-    { id: 'vt-fuel',    icon: '⛽', label: 'Fuel & Mileage',  action: () => { closeDrawer(); setFuelVehicleId(null); setScreen('fuel'); } },
+    { id: 'vt-fuel', icon: '⛽', label: 'Fuel & Mileage', action: () => { closeDrawer(); setFuelVehicleId(null); setScreen('fuel'); } },
   ];
 
   // Render function depending on screening states
   const renderContent = () => {
     if (screen === 'add-vehicle') {
       return (
-        <AddVehicleScreen 
+        <AddVehicleScreen
           vehicles={vehicles}
-          onBack={navigateBack} 
+          onBack={navigateBack}
           initialStep={1}
-          onSave={(v) => { 
-            setVehicles(prev => [...prev, v]); 
-            
+          onSave={(v) => {
+            setVehicles(prev => [...prev, v]);
+
             // Add mock documents in service database
             addMockDocumentsForVehicle(v);
-            
+
             // Add documents to React state
             const newDocs = [
               {
@@ -818,8 +831,8 @@ export default function CustomerDashboardScreen({ navigation }) {
             setDocuments(prev => [...prev, ...newDocs]);
 
             setTab('personalized');
-            setScreen(null); 
-          }} 
+            setScreen(null);
+          }}
         />
       );
     }
@@ -863,7 +876,7 @@ export default function CustomerDashboardScreen({ navigation }) {
           onBack={() => setScreen('vehicle-detail')}
           onSave={(updated) => {
             setVehicles(prev => prev.map(v => v.id === updated.id ? updated : v));
-            
+
             // Sync updated info in document service & state
             updateMockDocumentsForVehicle(updated);
             setDocuments(prev => prev.map(d => {
@@ -872,7 +885,7 @@ export default function CustomerDashboardScreen({ navigation }) {
                 if (d.key === 'rc') expiry = updated.rcExpiry || d.expiry;
                 if (d.key === 'puc') expiry = updated.pucExpiry || d.expiry;
                 if (d.key === 'insurance') expiry = updated.insuranceExpiry || d.expiry;
-                
+
                 return {
                   ...d,
                   expiry,
@@ -898,9 +911,9 @@ export default function CustomerDashboardScreen({ navigation }) {
     }
     if (screen === 'doc') {
       return (
-        <DocumentDetailScreen 
-          docType={activeDoc} 
-          vehicleId={activeVehicleId} 
+        <DocumentDetailScreen
+          docType={activeDoc}
+          vehicleId={activeVehicleId}
           documents={documents}
           onDeleteDocument={handleDeleteDocument}
           onReplaceDocument={handleUploadDocument}
@@ -910,7 +923,7 @@ export default function CustomerDashboardScreen({ navigation }) {
             } else {
               setScreen(null);
             }
-          }} 
+          }}
         />
       );
     }
@@ -949,8 +962,8 @@ export default function CustomerDashboardScreen({ navigation }) {
     }
     if (screen === 'tips') {
       return (
-        <TipsScreen 
-          onBack={navigateBack} 
+        <TipsScreen
+          onBack={navigateBack}
           bookmarkedTips={bookmarkedTips}
           bookmarkedVideos={bookmarkedVideos}
           likedTips={likedTips}
@@ -967,10 +980,10 @@ export default function CustomerDashboardScreen({ navigation }) {
     }
     if (screen === 'valuation') {
       return (
-        <VehicleValuationScreen 
-          vehicles={vehicles} 
-          initialVehicleId={valuationVehicleId} 
-          onBack={navigateBack} 
+        <VehicleValuationScreen
+          vehicles={vehicles}
+          initialVehicleId={valuationVehicleId}
+          onBack={navigateBack}
         />
       );
     }
@@ -1061,7 +1074,7 @@ export default function CustomerDashboardScreen({ navigation }) {
     switch (tab) {
       case 'home':
         return (
-          <DashboardTab 
+          <DashboardTab
             vehicles={vehicles}
             documents={documents}
             backendStatus={backendStatus}
@@ -1107,10 +1120,10 @@ export default function CustomerDashboardScreen({ navigation }) {
       // Standalone Vehicle Hub tab view removed
       case 'personalized':
         return (
-          <PersonalizedScreen 
-            vehicles={vehicles} 
-            onLogout={handleLogout} 
-            onOpenDoc={handleOpenDoc} 
+          <PersonalizedScreen
+            vehicles={vehicles}
+            onLogout={handleLogout}
+            onOpenDoc={handleOpenDoc}
             onOpenVehicle={(id) => {
               setActiveVehicleId(id);
               setScreen('vehicle-detail');
@@ -1154,47 +1167,53 @@ export default function CustomerDashboardScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {isOffline && (
-        <View style={styles.offlineBanner}>
-          <Text style={styles.offlineText}>⚠️ Working Offline. Check connection.</Text>
-          <TouchableOpacity onPress={simulateRetry} style={styles.retryButton} disabled={isRetrying}>
-            {isRetrying ? (
-              <ActivityIndicator size="small" color="white" />
-            ) : (
-              <Text style={styles.retryButtonText}>Retry</Text>
-            )}
-          </TouchableOpacity>
+      <ScrollView
+        style={styles.pageScroll}
+        contentContainerStyle={styles.pageScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {isOffline && (
+          <View style={styles.offlineBanner}>
+            <Text style={styles.offlineText}>⚠️ Working Offline. Check connection.</Text>
+            <TouchableOpacity onPress={simulateRetry} style={styles.retryButton} disabled={isRetrying}>
+              {isRetrying ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text style={styles.retryButtonText}>Retry</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
+        {/* Active screen content */}
+        <View style={styles.mainContainer}>
+          {renderContent()}
         </View>
-      )}
-      {/* Active screen content */}
-      <View style={styles.mainContainer}>
-        {renderContent()}
-      </View>
 
-      {/* Custom Bottom Nav Bar */}
-      {!screen && (
-        <View style={styles.bottomNav}>
-          <TouchableOpacity onPress={() => setTab('home')} style={styles.navButton} activeOpacity={0.7}>
-            <Text style={[styles.navIcon, tab === 'home' ? styles.navIconActive : null]}>🏠</Text>
-            <Text style={[styles.navText, tab === 'home' ? styles.navTextActive : null]}>Home</Text>
-          </TouchableOpacity>
+        {/* Custom Bottom Nav Bar */}
+        {!screen && (
+          <View style={styles.bottomNav}>
+            <TouchableOpacity onPress={() => setTab('home')} style={styles.navButton} activeOpacity={0.7}>
+              <Text style={[styles.navIcon, tab === 'home' ? styles.navIconActive : null]}>🏠</Text>
+              <Text style={[styles.navText, tab === 'home' ? styles.navTextActive : null]}>Home</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setTab('services')} style={styles.navButton} activeOpacity={0.7}>
-            <Text style={[styles.navIcon, tab === 'services' ? styles.navIconActive : null]}>🛠️</Text>
-            <Text style={[styles.navText, tab === 'services' ? styles.navTextActive : null]}>Services</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => setTab('services')} style={styles.navButton} activeOpacity={0.7}>
+              <Text style={[styles.navIcon, tab === 'services' ? styles.navIconActive : null]}>🛠️</Text>
+              <Text style={[styles.navText, tab === 'services' ? styles.navTextActive : null]}>Services</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setTab('tracker')} style={styles.navButton} activeOpacity={0.7}>
-            <Text style={[styles.navIcon, tab === 'tracker' ? styles.navIconActive : null]}>📊</Text>
-            <Text style={[styles.navText, tab === 'tracker' ? styles.navTextActive : null]}>Vehicle Tracker</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => setTab('tracker')} style={styles.navButton} activeOpacity={0.7}>
+              <Text style={[styles.navIcon, tab === 'tracker' ? styles.navIconActive : null]}>📊</Text>
+              <Text style={[styles.navText, tab === 'tracker' ? styles.navTextActive : null]}>Vehicle Tracker</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setTab('personalized')} style={styles.navButton} activeOpacity={0.7}>
-            <Text style={[styles.navIcon, tab === 'personalized' ? styles.navIconActive : null]}>🚗</Text>
-            <Text style={[styles.navText, tab === 'personalized' ? styles.navTextActive : null]}>My Vehicles</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            <TouchableOpacity onPress={() => setTab('personalized')} style={styles.navButton} activeOpacity={0.7}>
+              <Text style={[styles.navIcon, tab === 'personalized' ? styles.navIconActive : null]}>🚗</Text>
+              <Text style={[styles.navText, tab === 'personalized' ? styles.navTextActive : null]}>My Vehicles</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
 
       {/* Side Drawer Menu Overlay */}
       {drawerOpen && (
@@ -1203,7 +1222,7 @@ export default function CustomerDashboardScreen({ navigation }) {
           <Animated.View style={[styles.drawerBackdrop, { opacity: drawerBgOpacity }]}>
             <TouchableOpacity style={{ flex: 1 }} onPress={closeDrawer} activeOpacity={1} />
           </Animated.View>
-          
+
           {/* Drawer Menu Body */}
           <Animated.View style={[styles.drawerBody, { transform: [{ translateX: drawerX }] }]}>
             {/* Header info */}
@@ -1214,8 +1233,8 @@ export default function CustomerDashboardScreen({ navigation }) {
                   <Text style={styles.closeText}>✕</Text>
                 </TouchableOpacity>
               </View>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 onPress={() => { closeDrawer(); setTab('personalized'); setScreen(null); }}
                 style={styles.drawerProfileSection}
                 activeOpacity={0.8}
@@ -1234,7 +1253,7 @@ export default function CustomerDashboardScreen({ navigation }) {
             </View>
 
             {/* Navigation links */}
-            <ScrollView style={styles.drawerLinksContainer} showsVerticalScrollIndicator={false}>
+            <ScrollView style={styles.drawerLinksContainer} contentContainerStyle={styles.drawerLinksContent} showsVerticalScrollIndicator={false}>
               {drawerLinks.map((link) => {
                 // Render the Vehicle Tracker dropdown item
                 if (link.isDropdown) {
@@ -1280,16 +1299,18 @@ export default function CustomerDashboardScreen({ navigation }) {
                 }
                 // Regular drawer item
                 return (
-                  <TouchableOpacity 
-                    key={link.id} 
-                    onPress={link.action} 
-                    style={[styles.drawerLink, link.isActive ? styles.drawerLinkActive : null]} 
+                  <TouchableOpacity
+                    key={link.id}
+                    onPress={link.action}
+                    style={[styles.drawerLink, link.isActive ? styles.drawerLinkActive : null]}
                     activeOpacity={0.7}
                   >
                     <View style={styles.drawerLinkRow}>
-                      <Text style={[styles.drawerLinkIcon, link.isActive ? styles.drawerLinkIconActive : null]}>
-                        {link.icon}
-                      </Text>
+                      <Image
+                        source={link.icon}
+                        style={styles.drawerLinkIcon}
+                        resizeMode="contain"
+                      />
                       <Text style={[styles.drawerLinkLabel, link.isActive ? styles.drawerLinkLabelActive : null]}>
                         {link.label}
                       </Text>
@@ -1374,6 +1395,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
+  },
+  pageScroll: {
+    flex: 1,
+    width: '100%',
+  },
+  pageScrollContent: {
+    flexGrow: 1,
   },
   mainContainer: {
     flex: 1,
@@ -1532,6 +1560,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
   },
+  drawerLinksContent: {
+    paddingBottom: 30,
+  },
   drawerLink: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1551,8 +1582,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   drawerLinkIcon: {
-    fontSize: 18,
-    opacity: 0.8,
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
+    opacity: 0.9,
   },
   drawerLinkIconActive: {
     opacity: 1,

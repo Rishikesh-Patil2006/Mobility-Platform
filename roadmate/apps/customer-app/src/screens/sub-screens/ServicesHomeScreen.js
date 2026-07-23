@@ -24,7 +24,7 @@ export default function ServicesHomeScreen({ onBack, onSelectCategory, savedProv
         { id: 'PUC Center', name: 'PUC Center', emoji: '💨', accent: '#22C55E', bg: '#F0FDF4', count: 4, description: 'Pollution certificates & emission testing', image: require('../../../assets/services_images/puc center.jpg') },
         { id: 'Towing', name: 'Towing', emoji: '🛻', accent: '#F97316', bg: '#FFF7ED', count: 8, description: '24/7 roadside assistance & flatbed towing', image: require('../../../assets/services_images/towing.jpg') },
         { id: 'Driving Classes', name: 'Driving Classes', emoji: '🚗', accent: '#3B82F6', bg: '#EFF6FF', count: 3, description: 'Professional driving lessons & tutoring', image: require('../../../assets/services_images/service center.jpg') },
-        { id: 'RTO Agents', name: 'RTO Agents', emoji: '📝', accent: '#EC4899', bg: '#FDF2F8', count: 6, description: 'License issues, registration & transfer agents', image: require('../../../assets/services_images/denting&painting.jpg') },
+        { id: 'RTO Agents', name: 'RTO Agents', emoji: '📝', accent: '#EC4899', bg: '#FDF2F8', count: 6, description: 'License issues, registration & transfer agents', image: require('../../../assets/services_images/denting_painting.jpg') },
       ]
     },
     {

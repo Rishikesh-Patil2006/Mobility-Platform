@@ -5,10 +5,10 @@ export const categories = [
   { id: 'Car Wash', name: 'Car Wash', emoji: '🫧', accent: '#06B6D4', bg: '#ECFEFF', count: 5, image: require('../../assets/services_images/car_wash.jpg') },
   { id: 'Towing', name: 'Towing', emoji: '🛻', accent: '#F97316', bg: '#FFF7ED', count: 8, image: require('../../assets/services_images/towing.jpg') },
   { id: 'PUC Center', name: 'PUC Center', emoji: '💨', accent: '#22C55E', bg: '#F0FDF4', count: 4, image: require('../../assets/services_images/puc center.jpg') },
-  { id: 'Denting & Painting', name: 'Denting & Painting', emoji: '🎨', accent: '#EC4899', bg: '#FDF2F8', count: 3, image: require('../../assets/services_images/denting&painting.jpg') },
+  { id: 'Denting & Painting', name: 'Denting & Painting', emoji: '🎨', accent: '#EC4899', bg: '#FDF2F8', count: 3, image: require('../../assets/services_images/denting_painting.jpg') },
   { id: 'Service Center', name: 'Service Center', emoji: '🏬', accent: '#6366F1', bg: '#EEF2FF', count: 6, image: require('../../assets/services_images/service center.jpg') },
   { id: 'Driving Classes', name: 'Driving Classes', emoji: '🚗', accent: '#3B82F6', bg: '#EFF6FF', count: 3, image: require('../../assets/services_images/service center.jpg') },
-  { id: 'RTO Agents', name: 'RTO Agents', emoji: '📝', accent: '#EC4899', bg: '#FDF2F8', count: 6, image: require('../../assets/services_images/denting&painting.jpg') },
+  { id: 'RTO Agents', name: 'RTO Agents', emoji: '📝', accent: '#EC4899', bg: '#FDF2F8', count: 6, image: require('../../assets/services_images/denting_painting.jpg') },
   { id: 'Two Wheelers', name: 'Two Wheelers', emoji: '🏍️', accent: '#8B5CF6', bg: '#F5F3FF', count: 4, image: require('../../assets/vehicle_placeholder.png') },
   { id: 'Four Wheelers', name: 'Four Wheelers', emoji: '🚘', accent: '#EF4444', bg: '#FEF2F2', count: 2, image: require('../../assets/vehicle_placeholder.png') },
   // Fallbacks for missing assets

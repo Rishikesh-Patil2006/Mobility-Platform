@@ -45,7 +45,7 @@ const docIcons = {
 
 const serviceImages = {
   car_wash: require('../../../assets/services_images/car_wash.jpg'),
-  denting: require('../../../assets/services_images/denting&painting.jpg'),
+  denting: require('../../../assets/services_images/denting_painting.jpg'),
   garage: require('../../../assets/services_images/garage.jpg'),
   puc: require('../../../assets/services_images/puc center.jpg'),
   service: require('../../../assets/services_images/service center.jpg'),
@@ -137,7 +137,7 @@ export default function DashboardTab({
   const tipImages = {
     garage: require('../../../assets/services_images/garage.jpg'),
     service: require('../../../assets/services_images/service center.jpg'),
-    denting: require('../../../assets/services_images/denting&painting.jpg'),
+    denting: require('../../../assets/services_images/denting_painting.jpg'),
   };
 
   const docCards = [
@@ -240,11 +240,7 @@ export default function DashboardTab({
         </View>
       </View>
 
-      <ScrollView
-        style={styles.scrollBody}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollPadding}
-      >
+      <View style={styles.dashboardContent}>
         <View style={styles.healthBanner}>
           <View style={[styles.healthDot, { backgroundColor: backendStatus === 'Connected' ? '#22C55E' : '#EF4444' }]} />
           <Text style={styles.healthText}>Backend: {backendStatus}</Text>
@@ -573,7 +569,7 @@ export default function DashboardTab({
             </TouchableOpacity>
           ))}
         </ScrollView>
-      </ScrollView>
+      </View>
 
       {/* ── WEEKLY NOTIFICATIONS MODAL ── */}
       <Modal visible={notifBoxOpen} transparent animationType="fade">
@@ -760,6 +756,12 @@ const styles = StyleSheet.create({
     right: 8,
     borderWidth: 1.5,
     borderColor: '#2563EB',
+  },
+  dashboardContent: {
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 32,
   },
   scrollBody: {
     flex: 1,

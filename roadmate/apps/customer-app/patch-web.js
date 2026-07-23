@@ -45,9 +45,10 @@ window.require = function(moduleName) {
     };
   }
   console.warn('Unhandled require in browser polyfill:', moduleName);
-  return null;
+  return {};
 };
 </script>
+
 `;
 
 if (!indexHtml.includes('window.require = function')) {

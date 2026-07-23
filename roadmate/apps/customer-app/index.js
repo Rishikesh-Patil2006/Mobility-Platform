@@ -1,10 +1,5 @@
-import { AppRegistry } from 'react-native';
+import { registerRootComponent } from 'expo';
 import App from './App';
-import appName from './app.json';
 
-AppRegistry.registerComponent(appName.expo.name, () => App);
+registerRootComponent(App);
 
-if (window.document) {
-  const rootTag = document.getElementById('root') || document.getElementById('main');
-  AppRegistry.runApplication(appName.expo.name, { rootTag });
-}
