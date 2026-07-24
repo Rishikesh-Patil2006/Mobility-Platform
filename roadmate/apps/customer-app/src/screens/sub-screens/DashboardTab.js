@@ -61,14 +61,14 @@ const serviceBadges = {
   'Service Center': { text: 'Top Rated', color: '#F59E0B', bg: '#FFFBEB' },
 };
 
-export default function DashboardTab({ 
-  vehicles, 
+export default function DashboardTab({
+  vehicles,
   documents = [],
-  backendStatus, 
-  onOpenDrawer, 
-  onAddVehicle, 
-  onOpenDoc, 
-  onOpenServices, 
+  backendStatus,
+  onOpenDrawer,
+  onAddVehicle,
+  onOpenDoc,
+  onOpenServices,
   onOpenInfoHub,
   onOpenProfile,
   onOpenTips,
@@ -82,7 +82,7 @@ export default function DashboardTab({
 }) {
   const [notifBoxOpen, setNotifBoxOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('All Vehicles');
-  
+
   const [challanStats, setChallanStats] = useState({ pendingCount: 0, totalFine: 0, recentList: [] });
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function DashboardTab({
         let pendingCount = 0;
         let totalFine = 0;
         let recentList = [];
-        
+
         for (const v of vehicles) {
           const summary = await getChallanSummary(v.id);
           if (summary) {
@@ -203,8 +203,8 @@ export default function DashboardTab({
         </View>
       </View>
 
-      <ScrollView 
-        style={styles.scrollBody} 
+      <ScrollView
+        style={styles.scrollBody}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollPadding}
       >
@@ -219,9 +219,9 @@ export default function DashboardTab({
           <VehicleFilterDropdown selectedOption={selectedFilter} onSelectOption={setSelectedFilter} vehicles={vehicles} darkTheme={true} />
         </View>
 
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.vehiclesScroll}
         >
           {filteredVehicles.length === 0 ? (
@@ -230,25 +230,25 @@ export default function DashboardTab({
             </View>
           ) : (
             filteredVehicles.map((v) => {
-              const vehicleImage = v.images && v.images.length > 0 
-                ? { uri: v.images[0] } 
-                : v.image 
-                  ? (typeof v.image === 'string' ? { uri: v.image } : v.image) 
+              const vehicleImage = v.images && v.images.length > 0
+                ? { uri: v.images[0] }
+                : v.image
+                  ? (typeof v.image === 'string' ? { uri: v.image } : v.image)
                   : require('../../../assets/vehicle_placeholder.png');
 
               const vehicleAlert = getVehicleAlert(v.id, documents);
               const fuelColors = getFuelBadgeColor(v.fuel);
 
               return (
-                <TouchableOpacity 
-                  key={v.id} 
+                <TouchableOpacity
+                  key={v.id}
                   style={styles.vehicleCard}
                   onPress={() => onOpenVehicleInsights && onOpenVehicleInsights(v.id)}
                   activeOpacity={0.9}
                 >
                   <View style={styles.vehicleGraphicBox}>
-                    <Image 
-                      source={vehicleImage} 
+                    <Image
+                      source={vehicleImage}
                       style={styles.vehicleCoverImage}
                       resizeMode="cover"
                     />
@@ -256,54 +256,54 @@ export default function DashboardTab({
                       <Text style={[styles.cardFuelBadgeText, { color: fuelColors.text }]}>{v.fuel}</Text>
                     </View>
                   </View>
-                
-                <Text style={styles.vehicleName}>{v.name}</Text>
-                <Text style={styles.vehicleNumber}>{v.number}</Text>
-                
-                <View style={styles.tagsContainer}>
-                  <View style={[styles.tag, { backgroundColor: '#F0FDF4' }]}>
-                    <Text style={[styles.tagText, { color: '#16A34A' }]}>● Active</Text>
-                  </View>
-                  <View style={[styles.tag, { backgroundColor: '#EFF6FF' }]}>
-                    <Text style={[styles.tagText, { color: '#2563EB' }]}>{v.fuel}</Text>
-                  </View>
-                </View>
 
-                {vehicleAlert && (
-                  <TouchableOpacity
-                    onPress={() => {
-                      const vehicleDocs = documents.filter(d => d.vehicleId === v.id);
-                      const alertDocs = vehicleDocs
-                        .map(doc => ({ doc, days: getRemainingDays(doc.expiry) }))
-                        .filter(item => item.days <= 30)
-                        .sort((a, b) => a.days - b.days);
+                  <Text style={styles.vehicleName}>{v.name}</Text>
+                  <Text style={styles.vehicleNumber}>{v.number}</Text>
 
-                      if (alertDocs.length > 0) {
-                        onOpenDoc(alertDocs[0].doc.key, v.id);
-                      }
-                    }}
-                    style={[
-                      styles.vehicleAlertBadge,
-                      { 
-                        backgroundColor: vehicleAlert.bg, 
-                        borderColor: vehicleAlert.border 
-                      }
-                    ]}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[styles.vehicleAlertBadgeText, { color: vehicleAlert.color }]}>
-                      {vehicleAlert.text}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-               </TouchableOpacity>
-             );
-           })
+                  <View style={styles.tagsContainer}>
+                    <View style={[styles.tag, { backgroundColor: '#F0FDF4' }]}>
+                      <Text style={[styles.tagText, { color: '#16A34A' }]}>● Active</Text>
+                    </View>
+                    <View style={[styles.tag, { backgroundColor: '#EFF6FF' }]}>
+                      <Text style={[styles.tagText, { color: '#2563EB' }]}>{v.fuel}</Text>
+                    </View>
+                  </View>
+
+                  {vehicleAlert && (
+                    <TouchableOpacity
+                      onPress={() => {
+                        const vehicleDocs = documents.filter(d => d.vehicleId === v.id);
+                        const alertDocs = vehicleDocs
+                          .map(doc => ({ doc, days: getRemainingDays(doc.expiry) }))
+                          .filter(item => item.days <= 30)
+                          .sort((a, b) => a.days - b.days);
+
+                        if (alertDocs.length > 0) {
+                          onOpenDoc(alertDocs[0].doc.key, v.id);
+                        }
+                      }}
+                      style={[
+                        styles.vehicleAlertBadge,
+                        {
+                          backgroundColor: vehicleAlert.bg,
+                          borderColor: vehicleAlert.border
+                        }
+                      ]}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.vehicleAlertBadgeText, { color: vehicleAlert.color }]}>
+                        {vehicleAlert.text}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </TouchableOpacity>
+              );
+            })
           )}
 
-          <TouchableOpacity 
-            onPress={onAddVehicle} 
-            style={styles.addVehicleCard} 
+          <TouchableOpacity
+            onPress={onAddVehicle}
+            style={styles.addVehicleCard}
             activeOpacity={0.8}
           >
             <View style={styles.plusCircle}>
@@ -323,15 +323,15 @@ export default function DashboardTab({
 
         <View style={styles.servicesGrid}>
           {services.map((s) => (
-            <TouchableOpacity 
-              key={s.label} 
-              onPress={() => onOpenServices(s.label)} 
+            <TouchableOpacity
+              key={s.label}
+              onPress={() => onOpenServices(s.label)}
               style={styles.serviceButtonCard}
               activeOpacity={0.85}
             >
               <View style={styles.serviceImageContainer}>
-                <Image 
-                  source={serviceImages[s.label]} 
+                <Image
+                  source={serviceImages[s.label]}
                   style={styles.serviceImage}
                   resizeMode="cover"
                 />
@@ -444,10 +444,10 @@ export default function DashboardTab({
               <Text style={styles.challanStatLabel}>Total Fine</Text>
             </View>
           </View>
-          
+
           {challanStats.totalFine > 0 ? (
-            <TouchableOpacity 
-              style={styles.payChallanBtn} 
+            <TouchableOpacity
+              style={styles.payChallanBtn}
               onPress={() => onOpenChallan && onOpenChallan(null)}
               activeOpacity={0.8}
             >
@@ -461,8 +461,8 @@ export default function DashboardTab({
         </View>
 
         {challanStats.recentList.length > 0 && (
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.challanScrollList}
           >
@@ -497,8 +497,8 @@ export default function DashboardTab({
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
-          style={styles.homeFeaturedCard} 
+        <TouchableOpacity
+          style={styles.homeFeaturedCard}
           onPress={onOpenTips}
           activeOpacity={0.88}
         >
@@ -513,15 +513,15 @@ export default function DashboardTab({
           </View>
         </TouchableOpacity>
 
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.homeTipsScroll}
         >
           {homeMockTips.map((tip) => (
-            <TouchableOpacity 
-              key={tip.id} 
-              style={styles.homeTipCard} 
+            <TouchableOpacity
+              key={tip.id}
+              style={styles.homeTipCard}
               onPress={onOpenTips}
               activeOpacity={0.88}
             >
@@ -540,9 +540,9 @@ export default function DashboardTab({
 
       {/* ── WEEKLY NOTIFICATIONS MODAL ── */}
       <Modal visible={notifBoxOpen} transparent animationType="fade">
-        <TouchableOpacity 
-          style={styles.notifOverlay} 
-          activeOpacity={1} 
+        <TouchableOpacity
+          style={styles.notifOverlay}
+          activeOpacity={1}
           onPress={() => setNotifBoxOpen(false)}
         >
           <View style={styles.notifDropdown}>
@@ -562,8 +562,8 @@ export default function DashboardTab({
                 </View>
               ) : (
                 notifications.map((notif, index) => (
-                  <TouchableOpacity 
-                    key={index} 
+                  <TouchableOpacity
+                    key={index}
                     style={[styles.notifItem, index < notifications.length - 1 ? styles.borderBottom : null]}
                     onPress={() => {
                       setNotifBoxOpen(false);
@@ -577,7 +577,7 @@ export default function DashboardTab({
                     <View style={styles.notifItemContent}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Text style={[
-                          styles.notifItemTitle, 
+                          styles.notifItemTitle,
                           notif.status === 'Unread' ? { fontWeight: '900', color: '#1E3FAA' } : null
                         ]}>
                           {notif.title}

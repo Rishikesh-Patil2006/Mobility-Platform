@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, ActivityIndicator, Dimensions } from 'react-native';
+import { validateEmail, validateMobileNumber, validateWhatsAppNumber, validatePassword } from '../services/vendorProfileService';
+import CategorySelector from '../components/CategorySelector';
 
 const { width } = Dimensions.get('window');
 
@@ -14,27 +16,63 @@ const categories = [
 ];
 
 export default function VendorRegisterScreen({ navigation }) {
+  const [businessName, setBusinessName] = useState('');
   const [name, setName] = useState('');
-  const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [experience, setExperience] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [category, setCategory] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const isFormValid = name.trim().length > 2 && mobile.trim().length === 10 && email.trim().includes('@') && category;
+  const isFormValid =
+    businessName.trim().length > 2 &&
+    name.trim().length > 2 &&
+    email.trim().includes('@') &&
+    mobile.trim().length === 10 &&
+    whatsapp.trim().length === 10 &&
+    experience.trim().length > 0 &&
+    password.length >= 6 &&
+    password === confirmPassword &&
+    category;
 
   const handleRegister = () => {
-    if (!isFormValid) return;
+    setError('');
+
+    // Field-level validations
+    const emailErr = validateEmail(email);
+    if (emailErr) { return setError(emailErr); }
+
+    const mobileErr = validateMobileNumber(mobile);
+    if (mobileErr) { return setError(mobileErr); }
+
+    const whatsappErr = validateWhatsAppNumber(whatsapp);
+    if (whatsappErr) { return setError(whatsappErr); }
+
+    const passwordErr = validatePassword(password, confirmPassword);
+    if (passwordErr) { return setError(passwordErr); }
+
+    if (isNaN(Number(experience)) || Number(experience) < 0) {
+      return setError('Years of experience must be a valid number.');
+    }
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       navigation.navigate('VendorOtp', {
         mode: 'register',
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         name: name.trim(),
         mobile: mobile.trim(),
+        whatsapp: whatsapp.trim(),
+        businessName: businessName.trim(),
+        experience: experience.trim(),
+        password: password,
         category,
       });
     }, 1200);
@@ -57,6 +95,18 @@ export default function VendorRegisterScreen({ navigation }) {
 
       <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
         <View style={styles.formCard}>
+          {/* Business Name */}
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Business Name *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Speed Auto Garage"
+              placeholderTextColor="#9CA3AF"
+              value={businessName}
+              onChangeText={setBusinessName}
+            />
+          </View>
+
           {/* Owner Name */}
           <View style={styles.inputBox}>
             <Text style={styles.label}>Owner Name *</Text>
@@ -66,20 +116,6 @@ export default function VendorRegisterScreen({ navigation }) {
               placeholderTextColor="#9CA3AF"
               value={name}
               onChangeText={setName}
-            />
-          </View>
-
-          {/* Mobile Number */}
-          <View style={styles.inputBox}>
-            <Text style={styles.label}>Mobile Number *</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. 9876543210"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="numeric"
-              maxLength={10}
-              value={mobile}
-              onChangeText={(t) => setMobile(t.replace(/[^0-9]/g, ''))}
             />
           </View>
 
@@ -97,36 +133,81 @@ export default function VendorRegisterScreen({ navigation }) {
             />
           </View>
 
-          {/* Business Category Dropdown */}
+          {/* Mobile Number */}
           <View style={styles.inputBox}>
-            <Text style={styles.label}>Business Category *</Text>
-            <TouchableOpacity 
-              onPress={() => setDropdownOpen(!dropdownOpen)}
-              style={styles.dropdownTrigger}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.dropdownValue, !category ? styles.dropdownPlaceholder : null]}>
-                {category || 'Select Category'}
-              </Text>
-              <Text style={styles.dropdownChevron}>{dropdownOpen ? '▲' : '▼'}</Text>
-            </TouchableOpacity>
+            <Text style={styles.label}>Mobile Number *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. 9876543210"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="numeric"
+              maxLength={10}
+              value={mobile}
+              onChangeText={(t) => setMobile(t.replace(/[^0-9]/g, ''))}
+            />
+          </View>
 
-            {dropdownOpen && (
-              <View style={styles.dropdownList}>
-                {categories.map((c) => (
-                  <TouchableOpacity
-                    key={c}
-                    onPress={() => {
-                      setCategory(c);
-                      setDropdownOpen(false);
-                    }}
-                    style={styles.dropdownItem}
-                  >
-                    <Text style={styles.dropdownItemText}>{c}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
+          {/* WhatsApp Number */}
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>WhatsApp Number *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. 9876543210"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="numeric"
+              maxLength={10}
+              value={whatsapp}
+              onChangeText={(t) => setWhatsapp(t.replace(/[^0-9]/g, ''))}
+            />
+          </View>
+
+          {/* Years of Experience */}
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Years of Experience *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. 5"
+              placeholderTextColor="#9CA3AF"
+              keyboardType="numeric"
+              maxLength={2}
+              value={experience}
+              onChangeText={(t) => setExperience(t.replace(/[^0-9]/g, ''))}
+            />
+          </View>
+
+          {/* Password */}
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Password *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Min 6 characters"
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
+
+          {/* Confirm Password */}
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Confirm Password *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Re-enter password"
+              placeholderTextColor="#9CA3AF"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+          </View>
+
+          {/* Interactive Category Selector */}
+          <View style={styles.inputBox}>
+            <Text style={styles.label}>Select Business Category *</Text>
+            <CategorySelector
+              selectedCategoryId={category}
+              onSelectCategory={(cat) => setCategory(cat.id)}
+            />
           </View>
         </View>
 

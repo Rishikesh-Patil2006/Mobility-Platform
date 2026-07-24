@@ -26,6 +26,7 @@ import ChallanScreen from './sub-screens/ChallanScreen';
 import DrivingLicenseScreen from './sub-screens/DrivingLicenseScreen';
 import { getFavorites, removeFavorite } from '../services/favoriteService';
 import { FavoriteCard } from '../components/DrivingLicenseComponents';
+import { updateProvidersData } from '../services/serviceMockData';
 
 const { width, height } = Dimensions.get('window');
 
@@ -567,12 +568,18 @@ export default function CustomerDashboardScreen({ navigation }) {
   const [backendStatus, setBackendStatus] = useState('Checking...');
 
   useEffect(() => {
-    // Perform backend health check
+    // Perform backend health check and fetch providers
     const checkHealth = async () => {
       try {
         const response = await apiClient.get('/health');
         if (response.data?.success) {
           setBackendStatus('Connected');
+          
+          // Fetch dynamic providers & services list from backend
+          const provRes = await apiClient.get('/services/providers');
+          if (provRes.data?.success && provRes.data?.data) {
+            updateProvidersData(provRes.data.data);
+          }
         } else {
           setBackendStatus('Failed');
         }

@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { getDocumentStatus } from '../utils/expiryUtils';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  TextInput, 
-  Modal, 
-  ScrollView, 
-  Image, 
-  Dimensions, 
-  ActivityIndicator, 
-  Alert 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  ScrollView,
+  Image,
+  Dimensions,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -78,9 +78,9 @@ export const SearchBar = React.memo(function SearchBar({ value, onChangeText, se
         )}
       </View>
 
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
         style={styles.filtersScroll}
         contentContainerStyle={styles.filtersScrollContent}
       >
@@ -117,8 +117,8 @@ export const ReminderBanner = React.memo(function ReminderBanner({ reminders = [
   return (
     <View style={styles.reminderContainer}>
       <Text style={styles.reminderHeader}>🔔 Document Alerts</Text>
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.reminderScrollContent}
         snapToInterval={width - 40}
@@ -127,8 +127,8 @@ export const ReminderBanner = React.memo(function ReminderBanner({ reminders = [
         {reminders.map((rem, idx) => {
           const isExpired = rem.status.toLowerCase().includes('expired');
           return (
-            <View 
-              key={idx} 
+            <View
+              key={idx}
               style={[
                 styles.reminderCard,
                 isExpired ? styles.reminderExpiredCard : styles.reminderSoonCard
@@ -145,11 +145,11 @@ export const ReminderBanner = React.memo(function ReminderBanner({ reminders = [
                   {rem.vehicleName} · {rem.status}
                 </Text>
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[
                   styles.reminderActionBtn,
                   isExpired ? styles.reminderActionExpiredBtn : styles.reminderActionSoonBtn
-                ]} 
+                ]}
                 onPress={() => onAction(rem.key, rem.vehicleId)}
                 activeOpacity={0.7}
               >
@@ -170,8 +170,8 @@ export const DocumentCard = React.memo(function DocumentCard({ doc, vehicleName,
   const statusInfo = getDocumentStatus(doc.expiry);
 
   return (
-    <TouchableOpacity 
-      style={styles.docCardContainer} 
+    <TouchableOpacity
+      style={styles.docCardContainer}
       onPress={() => onOpen(doc.key, doc.vehicleId)}
       activeOpacity={0.9}
     >
@@ -185,7 +185,7 @@ export const DocumentCard = React.memo(function DocumentCard({ doc, vehicleName,
       <View style={styles.docCardDetails}>
         <Text style={styles.docCardName} numberOfLines={1}>{docTitle}</Text>
         <Text style={styles.docCardVehicle} numberOfLines={1}>{vehicleName}</Text>
-        
+
         <Text style={{ fontSize: 11, fontWeight: '750', color: statusInfo.color, marginTop: 4 }}>
           {statusInfo.subText}
         </Text>
@@ -204,8 +204,8 @@ export const DocumentCard = React.memo(function DocumentCard({ doc, vehicleName,
         </View>
       </View>
 
-      <TouchableOpacity 
-        style={styles.quickViewButton} 
+      <TouchableOpacity
+        style={styles.quickViewButton}
         onPress={() => onOpen(doc.key, doc.vehicleId)}
         activeOpacity={0.7}
       >
@@ -291,7 +291,7 @@ export function UploadDocumentModal({ visible, onClose, vehicles = [], onAddDocu
       if (current >= 100) {
         clearInterval(interval);
         setScanProgress(100);
-        
+
         // Scan Success Fill
         const ocr = mockOCRData[selectedDocType] || {
           number: 'DOC/' + Math.floor(Math.random() * 900000 + 100000),
@@ -486,7 +486,7 @@ export function UploadDocumentModal({ visible, onClose, vehicles = [], onAddDocu
                   onChangeText={setExpiryDate}
                   placeholder="e.g. Dec 31, 2030"
                 />
-                
+
                 <TouchableOpacity onPress={() => setUploadSource(null)} style={styles.rescanBtn}>
                   <Text style={styles.rescanBtnText}>Re-scan Document</Text>
                 </TouchableOpacity>

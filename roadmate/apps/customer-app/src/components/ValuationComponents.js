@@ -8,10 +8,10 @@ const { width } = Dimensions.get('window');
 export const VehicleSummaryCard = React.memo(function VehicleSummaryCard({ vehicle }) {
   if (!vehicle) return null;
 
-  const vehicleImage = vehicle.images && vehicle.images.length > 0 
-    ? { uri: vehicle.images[0] } 
-    : vehicle.image 
-      ? (typeof vehicle.image === 'string' ? { uri: vehicle.image } : vehicle.image) 
+  const vehicleImage = vehicle.images && vehicle.images.length > 0
+    ? { uri: vehicle.images[0] }
+    : vehicle.image
+      ? (typeof vehicle.image === 'string' ? { uri: vehicle.image } : vehicle.image)
       : require('../../assets/vehicle_placeholder.png');
 
   return (
@@ -41,7 +41,7 @@ export const ValueCard = React.memo(function ValueCard({ value, range, confidenc
     <View style={styles.valueCard}>
       <Text style={styles.valueLabel}>ESTIMATED MARKET VALUE</Text>
       <Text style={styles.valueAmount}>{value}</Text>
-      
+
       <View style={styles.valueMetricsRow}>
         <View style={styles.valueMetricColumn}>
           <Text style={styles.metricLabel}>VALUE RANGE</Text>
@@ -71,14 +71,14 @@ export const FactorCard = React.memo(function FactorCard({ title, value, type, i
         </View>
       </View>
       <View style={[
-        styles.impactTag, 
-        { 
+        styles.impactTag,
+        {
           backgroundColor: impact === 'Positive' ? '#E8F5E9' : '#FFFBEB',
           borderColor: impact === 'Positive' ? '#A5D6A7' : '#FDE68A'
         }
       ]}>
         <Text style={[
-          styles.impactText, 
+          styles.impactText,
           { color: impact === 'Positive' ? '#2E7D32' : '#D97706' }
         ]}>
           {impact}
@@ -559,7 +559,7 @@ export const DepreciationChart = React.memo(function DepreciationChart({ data })
   return (
     <View style={styles.sectionCard}>
       <Text style={styles.sectionHeading}>Depreciation Analysis</Text>
-      
+
       <View style={styles.depGrid}>
         <View style={styles.depItem}>
           <Text style={styles.depLabel}>Original Price</Text>
@@ -616,7 +616,7 @@ export const MarketInsightCard = React.memo(function MarketInsightCard({ data })
   return (
     <View style={styles.sectionCard}>
       <Text style={styles.sectionHeading}>Market Price Insights</Text>
-      
+
       <View style={styles.insightHeaderRow}>
         <View style={styles.insightHeaderBox}>
           <Text style={styles.insightMiniLabel}>DEMAND LEVEL</Text>
@@ -678,19 +678,19 @@ export const ActionCard = React.memo(function ActionCard({ onSave, onShare, onDo
   return (
     <View style={styles.sectionCard}>
       <Text style={styles.sectionHeading}>Available Actions</Text>
-      
+
       {/* Sell / Exchange Row */}
       <View style={styles.btnRow}>
-        <TouchableOpacity 
-          style={[styles.actionBtn, styles.sellBtn]} 
+        <TouchableOpacity
+          style={[styles.actionBtn, styles.sellBtn]}
           onPress={onSell}
           activeOpacity={0.8}
         >
           <Text style={styles.sellBtnText}>Sell Vehicle</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.actionBtn, styles.exchangeBtn]} 
+
+        <TouchableOpacity
+          style={[styles.actionBtn, styles.exchangeBtn]}
           onPress={onExchange}
           activeOpacity={0.8}
         >

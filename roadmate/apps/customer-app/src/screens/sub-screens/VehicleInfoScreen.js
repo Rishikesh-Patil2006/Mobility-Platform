@@ -1,15 +1,15 @@
 // roadmate/apps/customer-app/src/screens/sub-screens/VehicleInfoScreen.js
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  ActivityIndicator, 
-  Alert, 
-  Dimensions, 
-  Image 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image
 } from 'react-native';
 import { getVehicleInfo } from '../../services/vehicleInfoService';
 import { VehicleFilterDropdown, VehicleInfoSection } from '../../components/VehicleComponents';
@@ -56,10 +56,10 @@ export default function VehicleInfoScreen({ vehicles = [], initialVehicleId, onB
 
   const getVehicleImage = (v) => {
     if (!v) return require('../../../assets/vehicle_placeholder.png');
-    return v.images && v.images.length > 0 
-      ? { uri: v.images[0] } 
-      : v.image 
-        ? (typeof v.image === 'string' ? { uri: v.image } : v.image) 
+    return v.images && v.images.length > 0
+      ? { uri: v.images[0] }
+      : v.image
+        ? (typeof v.image === 'string' ? { uri: v.image } : v.image)
         : require('../../../assets/vehicle_placeholder.png');
   };
 
@@ -115,7 +115,7 @@ export default function VehicleInfoScreen({ vehicles = [], initialVehicleId, onB
             <View style={styles.overviewInfo}>
               <Text style={styles.overviewName}>{activeVehicle?.name || vahanInfo?.name}</Text>
               <Text style={styles.overviewNumber}>🪪 {activeVehicle?.number || vahanInfo?.number}</Text>
-              
+
               <View style={styles.badgesRow}>
                 <View style={styles.overviewBadge}>
                   <Text style={styles.overviewBadgeText}>⛽ {vahanInfo?.fuelType || activeVehicle?.fuel}</Text>

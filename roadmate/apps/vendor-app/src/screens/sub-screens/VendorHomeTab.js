@@ -1,76 +1,236 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, RefreshControl } from 'react-native';
+import { useVendorProfile } from '../../context/VendorProfileContext';
+import { getListingKPIMetricsByTimeframe } from '../../services/vendorListingAnalyticsService';
+import StatCard from '../../components/StatCard';
+import QuickActionCard from '../../components/QuickActionCard';
+import AvailabilityStatusCard from '../../components/AvailabilityStatusCard';
+import GlobalSearchModal from '../../components/GlobalSearchModal';
+import NotificationCenterModal from '../../components/NotificationCenterModal';
 
 const { width } = Dimensions.get('window');
 
-const recentActivities = [
-  { id: '1', name: 'Rahul S.', time: '10 mins ago', service: 'Car Wash', status: 'Arrived', details: 'Swift (MH-19-AB-1234)' },
-  { id: '2', name: 'Sameer P.', time: '1 hour ago', service: 'Engine Tune-up', status: 'Scheduled', details: 'Activa (MH-19-CD-5678)' },
-  { id: '3', name: 'Amit K.', time: '2 hours ago', service: 'AC Gas Refill', status: 'Completed', details: 'Creta (MH-19-EF-9012)' },
-];
+const periods = ['Today', 'Last 7 Days', 'Last 30 Days', 'Last 3 Months', 'This Year'];
 
 export default function VendorHomeTab({ onSelectTab }) {
+  const { profile } = useVendorProfile();
+
+  const [selectedPeriod, setSelectedPeriod] = useState('Last 7 Days');
+  const [refreshing, setRefreshing] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  // Listing Platform KPI Metrics
+  const kpis = getListingKPIMetricsByTimeframe(selectedPeriod);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 800);
+  };
+
+  // Listing Quick Action shortcuts
+  const quickActions = [
+    {
+      id: 'add-service',
+      label: 'Add Service',
+      emoji: '＋',
+      color: '#1E3A8A',
+      onPress: () => onSelectTab && onSelectTab('listings'),
+    },
+    {
+      id: 'edit-profile',
+      label: 'Edit Profile',
+      emoji: '📝',
+      color: '#2563EB',
+      onPress: () => onSelectTab && onSelectTab('profile', 'particulars'),
+    },
+    {
+      id: 'update-hours',
+      label: 'Working Hours',
+      emoji: '⏰',
+      color: '#0D9488',
+      onPress: () => onSelectTab && onSelectTab('profile', 'availability'),
+    },
+    {
+      id: 'view-listings',
+      label: 'View Listings',
+      emoji: '📋',
+      color: '#7C3AED',
+      onPress: () => onSelectTab && onSelectTab('listings'),
+    },
+    {
+      id: 'view-reviews',
+      label: 'View Reviews',
+      emoji: '⭐',
+      color: '#EA580C',
+      onPress: () => onSelectTab && onSelectTab('profile', 'particulars', 'reviews'),
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* ── Top Header ── */}
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.welcomeText}>Welcome Back 👋</Text>
-            <Text style={styles.shopName}>Speed Auto Garage</Text>
+            <Text style={styles.shopName}>{profile?.businessName || 'RoadMate Partner'}</Text>
             <View style={styles.locationRow}>
               <Text style={styles.locationPin}>📍</Text>
-              <Text style={styles.locationText}>Jalgaon, Maharashtra</Text>
+              <Text style={styles.locationText}>
+                {profile?.city && profile?.state ? `${profile.city}, ${profile.state}` : 'Jalgaon, Maharashtra'}
+              </Text>
             </View>
           </View>
-          <View style={styles.badgeContainer}>
-            <View style={styles.onlineBadge}>
-              <Text style={styles.onlineText}>● Active</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <TouchableOpacity
+              onPress={() => setShowNotificationModal(true)}
+              style={styles.headerBellBtn}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.headerBellEmoji}>🔔</Text>
+              <View style={styles.headerBellBadge}>
+                <Text style={styles.headerBellBadgeText}>3</Text>
+              </View>
+            </TouchableOpacity>
+
+            <View style={styles.badgeContainer}>
+              <View style={styles.onlineBadge}>
+                <Text style={styles.onlineText}>● {kpis.verificationStatus}</Text>
+              </View>
+              <Text style={styles.categoryBadgeText}>{profile?.mainCategory || 'Garage'}</Text>
             </View>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
-        {/* Performance metrics Grid */}
-        <View style={styles.metricsGrid}>
-          <View style={styles.metricCard}>
-            <Text style={styles.metricEmoji}>👤</Text>
-            <Text style={styles.metricValue}>14</Text>
-            <Text style={styles.metricLabel}>Visitors Today</Text>
+      <ScrollView
+        style={styles.scrollBody}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollPadding}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={['#1E3A8A']} />}
+      >
+        {/* ── Global Search Launch Bar ── */}
+        <TouchableOpacity
+          onPress={() => setShowSearchModal(true)}
+          style={styles.globalSearchLaunchBar}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.launchSearchIcon}>🔍</Text>
+          <Text style={styles.launchSearchPlaceholder}>Search services, categories, tips, reviews...</Text>
+          <View style={styles.launchFilterBadge}>
+            <Text style={styles.launchFilterText}>⚙️ Filter</Text>
           </View>
+        </TouchableOpacity>
 
-          <View style={styles.metricCard}>
-            <Text style={styles.metricEmoji}>⭐</Text>
-            <Text style={styles.metricValue}>4.8</Text>
-            <Text style={styles.metricLabel}>Average Rating</Text>
-          </View>
+        {/* ── Shared Availability Component ── */}
+        <AvailabilityStatusCard />
 
-          <TouchableOpacity onPress={() => onSelectTab('listings')} style={styles.metricCard} activeOpacity={0.8}>
-            <Text style={styles.metricEmoji}>📋</Text>
-            <Text style={styles.metricValue}>3</Text>
-            <Text style={styles.metricLabel}>Pending Leads</Text>
-          </TouchableOpacity>
+        {/* ── Timeframe Filter Bar ── */}
+        <View style={styles.filterBar}>
+          <Text style={styles.filterTitle}>Analytics Window:</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterScroll}>
+            {periods.map((p) => {
+              const selected = selectedPeriod === p;
+              return (
+                <TouchableOpacity
+                  key={p}
+                  onPress={() => setSelectedPeriod(p)}
+                  style={[styles.filterPill, selected ? styles.filterPillActive : null]}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.filterPillText, selected ? styles.filterPillTextActive : null]}>{p}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
 
-        {/* Emergency Towing / Breakdown Alerts panel */}
+        {/* ── 1. Listing Platform Key Metrics Grid ── */}
+        <Text style={styles.sectionHeader}>📈 Business Listing Performance</Text>
+        <View style={styles.kpiGrid}>
+          <StatCard
+            label="Business Profile Views"
+            value={kpis.profileViews}
+            emoji="👁️"
+            change={kpis.profileViewsChange}
+            accentColor="#2563EB"
+          />
+          <StatCard
+            label="Service Listing Views"
+            value={kpis.serviceViews}
+            emoji="🔍"
+            change={kpis.serviceViewsChange}
+            accentColor="#8B5CF6"
+          />
+        </View>
+
+        <View style={styles.kpiGrid}>
+          <StatCard
+            label="WhatsApp Inquiries"
+            value={kpis.whatsAppClicks}
+            emoji="💬"
+            change={kpis.whatsAppChange}
+            accentColor="#10B981"
+          />
+          <StatCard
+            label="Phone Call Clicks"
+            value={kpis.phoneCalls}
+            emoji="📞"
+            change={kpis.callsChange}
+            accentColor="#F59E0B"
+          />
+        </View>
+
+        <View style={styles.kpiGrid}>
+          <StatCard
+            label="Direction Requests"
+            value={kpis.directionRequests}
+            emoji="🗺️"
+            change={kpis.directionsChange}
+            accentColor="#EC4899"
+          />
+          <StatCard
+            label="Customer Rating"
+            value={`${kpis.averageRating} ★`}
+            emoji="⭐"
+            subtitle={kpis.ratingSubtitle}
+            accentColor="#EAB308"
+          />
+        </View>
+
+        <View style={styles.kpiGrid}>
+          <StatCard
+            label="Published Tips Views"
+            value={kpis.tipsViews}
+            emoji="🛠️"
+            subtitle={`${kpis.tipsSubtitle} · ${kpis.tipsCTR}`}
+            accentColor="#06B6D4"
+          />
+          <StatCard
+            label="Profile Completion"
+            value={`${kpis.profileCompletion}%`}
+            emoji="📊"
+            subtitle={kpis.subscriptionBadge}
+            accentColor="#16A34A"
+            onPress={() => onSelectTab && onSelectTab('profile', 'particulars')}
+          />
+        </View>
+
+        {/* ── 2. Quick Shortcuts Panel ── */}
+        <QuickActionCard actions={quickActions} />
+
+        {/* ── Preserved Emergency Roadside Assistance Alert Card ── */}
         <View style={styles.emergencyAlertCard}>
           <View style={styles.alertHeaderRow}>
-            <Text style={styles.alertHeaderTitle}>🚨 Roadside Towing Alert</Text>
+            <Text style={styles.alertHeaderTitle}>🚨 Roadside Assistance Alert</Text>
             <View style={styles.liveBadge}>
               <Text style={styles.liveBadgeText}>Live</Text>
             </View>
           </View>
           <Text style={styles.alertDesc}>
-            Customer reported engine breakdown on NH-6 Highway.
+            Customer requested emergency breakdown assistance on NH-6 Highway.
           </Text>
-          
-          <View style={styles.alertDetailsBlock}>
-            <Text style={styles.detailLine}><Text style={styles.bold}>Customer:</Text> Manoj K.</Text>
-            <Text style={styles.detailLine}><Text style={styles.bold}>Vehicle:</Text> Maruti Swift (Red)</Text>
-            <Text style={styles.detailLine}><Text style={styles.bold}>Distance:</Text> 1.8 km away</Text>
-          </View>
-
           <View style={styles.alertActionsRow}>
             <TouchableOpacity style={styles.alertCallButton} activeOpacity={0.7}>
               <Text style={styles.alertCallText}>📞 Call Customer</Text>
@@ -80,45 +240,87 @@ export default function VendorHomeTab({ onSelectTab }) {
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Recent Activities Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
-        </View>
-        
-        <View style={styles.activityList}>
-          {recentActivities.map((act) => {
-            const isCompleted = act.status === 'Completed';
-            const isArrived = act.status === 'Arrived';
-            return (
-              <View key={act.id} style={styles.activityRow}>
-                <View style={styles.activityLeft}>
-                  <View style={[styles.avatarCircle, { backgroundColor: isCompleted ? '#F0FDF4' : isArrived ? '#EFF6FF' : '#FFF7ED' }]}>
-                    <Text style={styles.avatarEmoji}>{isCompleted ? '✅' : isArrived ? '🚗' : '🕒'}</Text>
-                  </View>
-                  <View>
-                    <Text style={styles.activityName}>{act.name} · <Text style={styles.activityService}>{act.service}</Text></Text>
-                    <Text style={styles.activityDetails}>{act.details}</Text>
-                  </View>
-                </View>
-                <View style={styles.activityRight}>
-                  <Text style={styles.activityTime}>{act.time}</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: isCompleted ? '#F0FDF4' : isArrived ? '#EFF6FF' : '#FFF7ED' }]}>
-                    <Text style={[styles.statusText, { color: isCompleted ? '#16A34A' : isArrived ? '#2563EB' : '#D97706' }]}>
-                      {act.status}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            );
-          })}
-        </View>
       </ScrollView>
+
+      {/* ── Global Search & Advanced Filters Modal ── */}
+      <GlobalSearchModal
+        visible={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+        vendorProfile={profile}
+      />
+
+      {/* ── Centralized Notification & Activity Center Modal ── */}
+      <NotificationCenterModal
+        visible={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  headerBellBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerBellEmoji: {
+    fontSize: 16,
+  },
+  headerBellBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    backgroundColor: '#EF4444',
+    borderRadius: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+  headerBellBadgeText: {
+    color: 'white',
+    fontSize: 9,
+    fontWeight: '900',
+  },
+  globalSearchLaunchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1.5,
+    borderColor: '#1E3A8A',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 12,
+    shadowColor: '#1E3A8A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  launchSearchIcon: {
+    fontSize: 14,
+    marginRight: 8,
+  },
+  launchSearchPlaceholder: {
+    flex: 1,
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '600',
+  },
+  launchFilterBadge: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  launchFilterText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#1E3A8A',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
@@ -126,248 +328,175 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#1E3A8A',
     paddingTop: 50,
-    paddingBottom: 24,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    paddingBottom: 20,
     paddingHorizontal: 20,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   welcomeText: {
     color: '#93C5FD',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
   },
   shopName: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '800',
-    marginTop: 2,
+    marginVertical: 2,
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
-    gap: 4,
   },
   locationPin: {
-    fontSize: 10,
+    fontSize: 12,
+    marginRight: 4,
   },
   locationText: {
-    color: '#93C5FD',
-    fontSize: 11,
-    fontWeight: '600',
+    color: '#E2E8F0',
+    fontSize: 12,
   },
   badgeContainer: {
-    justifyContent: 'center',
+    alignItems: 'flex-end',
   },
   onlineBadge: {
-    backgroundColor: '#10B981',
-    borderRadius: 8,
+    backgroundColor: '#DCFCE7',
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    borderRadius: 20,
+    marginBottom: 6,
   },
   onlineText: {
-    color: 'white',
-    fontSize: 10,
+    color: '#166534',
+    fontSize: 11,
     fontWeight: '800',
+  },
+  categoryBadgeText: {
+    color: '#BFDBFE',
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   scrollBody: {
     flex: 1,
   },
   scrollPadding: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 32,
+    padding: 16,
+    paddingBottom: 40,
   },
-  metricsGrid: {
+  filterBar: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
-  },
-  metricCard: {
-    flex: 1,
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 20,
-    paddingVertical: 14,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 4,
-    elevation: 1,
+    marginBottom: 14,
+    marginTop: 8,
   },
-  metricEmoji: {
-    fontSize: 18,
-    marginBottom: 4,
+  filterTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#64748B',
+    marginRight: 8,
   },
-  metricValue: {
-    fontSize: 16,
+  filterScroll: {
+    gap: 6,
+  },
+  filterPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#E2E8F0',
+  },
+  filterPillActive: {
+    backgroundColor: '#1E3A8A',
+  },
+  filterPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  filterPillTextActive: {
+    color: 'white',
+  },
+  sectionHeader: {
+    fontSize: 15,
     fontWeight: '800',
-    color: '#111827',
+    color: '#0F172A',
+    marginBottom: 10,
   },
-  metricLabel: {
-    fontSize: 9,
-    color: '#9CA3AF',
-    marginTop: 2,
-    fontWeight: '600',
+  kpiGrid: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
   },
   emergencyAlertCard: {
     backgroundColor: '#FEF2F2',
-    borderColor: '#FEE2E2',
+    borderColor: '#FCA5A5',
     borderWidth: 1.5,
-    borderRadius: 24,
+    borderRadius: 20,
     padding: 16,
+    marginTop: 10,
     marginBottom: 20,
   },
   alertHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   alertHeaderTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#EF4444',
+    color: '#991B1B',
   },
   liveBadge: {
     backgroundColor: '#EF4444',
-    borderRadius: 6,
+    paddingHorizontal: 8,
     paddingVertical: 2,
-    paddingHorizontal: 6,
+    borderRadius: 10,
   },
   liveBadgeText: {
     color: 'white',
-    fontSize: 8,
-    fontWeight: '800',
+    fontSize: 10,
+    fontWeight: '900',
     textTransform: 'uppercase',
   },
   alertDesc: {
     fontSize: 12,
     color: '#7F1D1D',
-    lineHeight: 18,
-    marginBottom: 10,
-    fontWeight: '500',
-  },
-  alertDetailsBlock: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 10,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#FEE2E2',
-  },
-  detailLine: {
-    fontSize: 11,
-    color: '#4B5563',
-    lineHeight: 16,
-  },
-  bold: {
-    fontWeight: '700',
   },
   alertActionsRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
   },
   alertCallButton: {
     flex: 1,
-    backgroundColor: '#22C55E',
+    backgroundColor: '#DC2626',
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   alertCallText: {
     color: 'white',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   alertMapButton: {
     flex: 1,
-    backgroundColor: '#1E3A8A',
+    backgroundColor: 'white',
+    borderColor: '#DC2626',
+    borderWidth: 1,
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   alertMapText: {
-    color: 'white',
+    color: '#DC2626',
     fontSize: 12,
-    fontWeight: '700',
-  },
-  sectionHeader: {
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: '800',
-    color: '#111827',
-  },
-  activityList: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 24,
-    paddingHorizontal: 16,
-  },
-  activityRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderColor: '#F3F4F6',
-  },
-  activityLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  avatarCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarEmoji: {
-    fontSize: 18,
-  },
-  activityName: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: '#111827',
-  },
-  activityService: {
-    fontWeight: '500',
-    color: '#6B7280',
-  },
-  activityDetails: {
-    fontSize: 10,
-    color: '#9CA3AF',
-    marginTop: 2,
-  },
-  activityRight: {
-    alignItems: 'flex-end',
-    gap: 4,
-  },
-  activityTime: {
-    fontSize: 9,
-    color: '#9CA3AF',
-  },
-  statusBadge: {
-    borderRadius: 6,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-  },
-  statusText: {
-    fontSize: 9,
     fontWeight: '800',
   },
 });

@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Modal, 
-  TextInput, 
-  Alert, 
-  Dimensions, 
-  Image 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+  TextInput,
+  Alert,
+  Dimensions,
+  Image
 } from 'react-native';
-import { 
-  ProfileHeader, 
-  InfoCard, 
-  SettingItem, 
-  ToggleCard, 
-  LogoutDialog 
+import {
+  ProfileHeader,
+  InfoCard,
+  SettingItem,
+  ToggleCard,
+  LogoutDialog
 } from '../../components/ProfileComponents';
 import { DrivingLicenseSummary } from '../../components/DrivingLicenseComponents';
 import { getLicenses } from '../../services/drivingLicenseService';
@@ -25,10 +25,10 @@ import { PremiumVehicleCard } from '../../components/VehicleComponents';
 
 const { width, height } = Dimensions.get('window');
 
-export default function PersonalizedScreen({ 
-  vehicles = [], 
-  onLogout, 
-  onOpenDoc, 
+export default function PersonalizedScreen({
+  vehicles = [],
+  onLogout,
+  onOpenDoc,
   onOpenVehicle,
   savedProviderIds = [],
   toggleSaveProvider,
@@ -191,7 +191,7 @@ export default function PersonalizedScreen({
   return (
     <View style={styles.container}>
       {/* ── PROFILE HEADER ── */}
-      <ProfileHeader 
+      <ProfileHeader
         avatarUri={avatarUri}
         name={userDetails.name}
         email={userDetails.email}
@@ -201,9 +201,9 @@ export default function PersonalizedScreen({
       />
 
       <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
-        
+
         {/* ── PERSONAL INFORMATION INFOCARD ── */}
-        <InfoCard 
+        <InfoCard
           details={userDetails}
           isEditing={isEditingDetails}
           onCancel={() => setIsEditingDetails(false)}
@@ -221,7 +221,7 @@ export default function PersonalizedScreen({
               <Text style={styles.headerActionLink}>+ Add Vehicle</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.statsRow}>
             <View style={styles.statBox}>
               <Text style={styles.statNumber}>{vehicles.length}</Text>
@@ -283,7 +283,7 @@ export default function PersonalizedScreen({
                         <Text style={styles.savedServiceRating}>⭐ {vendor.rating} ({vendor.reviews} reviews)</Text>
                       </View>
                     </View>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={() => toggleSaveProvider(vendor.id)}
                       style={styles.savedServiceRemoveBtn}
                       activeOpacity={0.7}
@@ -291,7 +291,7 @@ export default function PersonalizedScreen({
                       <Text style={styles.savedServiceRemoveText}>✕</Text>
                     </TouchableOpacity>
                   </View>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => onSelectProvider(vendor)}
                     style={styles.savedServiceDetailBtn}
                     activeOpacity={0.8}
@@ -313,43 +313,43 @@ export default function PersonalizedScreen({
         {/* ── NOTIFICATION SETTINGS ── */}
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Notification Settings</Text>
-          
-          <ToggleCard 
+
+          <ToggleCard
             label="Insurance Reminders"
             description="Alerts before insurance policy expiry"
             value={notifs.insurance}
             onValueChange={(v) => setNotifs({ ...notifs, insurance: v })}
           />
 
-          <ToggleCard 
+          <ToggleCard
             label="PUC Reminders"
             description="Alerts before PUC certificate validity ends"
             value={notifs.puc}
             onValueChange={(v) => setNotifs({ ...notifs, puc: v })}
           />
 
-          <ToggleCard 
+          <ToggleCard
             label="RC Renewal Reminders"
             description="Registration validity expiry updates"
             value={notifs.rc}
             onValueChange={(v) => setNotifs({ ...notifs, rc: v })}
           />
 
-          <ToggleCard 
+          <ToggleCard
             label="Driving License Renewal"
             description="Alerts for driving license expiration"
             value={notifs.dl}
             onValueChange={(v) => setNotifs({ ...notifs, dl: v })}
           />
 
-          <ToggleCard 
+          <ToggleCard
             label="Booking Updates"
             description="Real-time progress updates on active requests"
             value={notifs.bookings}
             onValueChange={(v) => setNotifs({ ...notifs, bookings: v })}
           />
 
-          <ToggleCard 
+          <ToggleCard
             label="Promotional Notifications"
             description="Exclusive discounts, tips, and service updates"
             value={notifs.promo}
@@ -361,8 +361,8 @@ export default function PersonalizedScreen({
         {/* ── APP SETTINGS PANEL ── */}
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Settings</Text>
-          
-          <SettingItem 
+
+          <SettingItem
             icon="🌐"
             label="Language"
             description="Change preferred display language"
@@ -370,7 +370,7 @@ export default function PersonalizedScreen({
             onPress={() => setLangModal(true)}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="🎨"
             label="Theme Selection"
             description="Choose app appearance"
@@ -378,42 +378,42 @@ export default function PersonalizedScreen({
             onPress={() => setThemeModal(true)}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="🔑"
             label="Change Password"
             description="Update account password credentials"
             onPress={() => setPwModal(true)}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="🛡️"
             label="Privacy Options"
             description="Manage data sharing preferences"
             onPress={() => setInfoModal('privacy')}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="🔒"
             label="Security & Sync"
             description="Parivahan/DigiLocker sync logs"
             onPress={() => setInfoModal('security')}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="🔐"
             label="App Permissions"
             description="Manage system permissions"
             onPress={() => setPermissionsModal(true)}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="📜"
             label="Terms & Conditions"
             description="Review terms of service use"
             onPress={() => setInfoModal('terms')}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="🛡️"
             label="Privacy Policy"
             description="Review customer data policy"
@@ -426,14 +426,14 @@ export default function PersonalizedScreen({
         <View style={styles.sectionCard}>
           <Text style={styles.sectionTitle}>Help & Support Desk</Text>
 
-          <SettingItem 
+          <SettingItem
             icon="❓"
             label="Frequently Asked Questions"
             description="Quick answers to common questions"
             onPress={() => setFaqModal(true)}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="📞"
             label="Contact Support"
             description="Speak directly to our support agents"
@@ -445,14 +445,14 @@ export default function PersonalizedScreen({
             }}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="⚠️"
             label="Report a Technical Bug"
             description="Let us know if you face app issues"
             onPress={() => setIssueModal(true)}
           />
 
-          <SettingItem 
+          <SettingItem
             icon="⭐"
             label="App Feedback"
             description="Help us improve with ratings & comments"
@@ -462,9 +462,9 @@ export default function PersonalizedScreen({
         </View>
 
         {/* ── LOGOUT SESSION TRIGGER ── */}
-        <TouchableOpacity 
-          onPress={() => setLogoutVisible(true)} 
-          style={styles.logoutButton} 
+        <TouchableOpacity
+          onPress={() => setLogoutVisible(true)}
+          style={styles.logoutButton}
           activeOpacity={0.88}
         >
           <Text style={styles.logoutButtonText}>🚪 Logout Session</Text>
@@ -476,15 +476,15 @@ export default function PersonalizedScreen({
 
       {/* CHOOSE IMAGE SOURCE FOR DRIVING LICENSE */}
       <Modal visible={licensePickerOpen} transparent animationType="fade">
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
-          activeOpacity={1} 
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
           onPress={() => setLicensePickerOpen(false)}
         >
           <View style={styles.bottomSheetCard}>
             <Text style={styles.modalHeaderTitle}>Upload Driving License</Text>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               onPress={() => { setLicensePickerOpen(false); setLicenseCameraOpen(true); }}
               style={styles.modalSheetOption}
               activeOpacity={0.7}
@@ -493,7 +493,7 @@ export default function PersonalizedScreen({
               <Text style={styles.modalSheetOptionText}>Take Photo (Camera)</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => { setLicensePickerOpen(false); setLicenseGalleryOpen(true); }}
               style={[styles.modalSheetOption, styles.borderTop]}
               activeOpacity={0.7}
@@ -502,7 +502,7 @@ export default function PersonalizedScreen({
               <Text style={styles.modalSheetOptionText}>Choose from Gallery</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setLicensePickerOpen(false)}
               style={styles.modalSheetCancelBtn}
               activeOpacity={0.7}
@@ -539,7 +539,7 @@ export default function PersonalizedScreen({
             </View>
 
             <View style={styles.cameraActionRow}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 disabled={licenseCapturing}
                 onPress={startLicenseCamera}
                 style={styles.cameraShutterBtn}
@@ -564,14 +564,14 @@ export default function PersonalizedScreen({
             </View>
 
             <View style={styles.galleryGrid}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={handleLicenseGallerySelect}
                 style={styles.galleryGridItem}
                 activeOpacity={0.85}
               >
-                <Image 
-                  source={require('../../../assets/vehicle_placeholder.png')} 
-                  style={styles.galleryGridImage} 
+                <Image
+                  source={require('../../../assets/vehicle_placeholder.png')}
+                  style={styles.galleryGridImage}
                 />
                 <View style={styles.galleryItemOverlay}>
                   <Text style={styles.galleryItemText}>License_Copy.jpg</Text>
@@ -641,7 +641,7 @@ export default function PersonalizedScreen({
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, { width: '85%', maxWidth: 340 }]}>
             <Text style={styles.modalTitle}>Change Password</Text>
-            
+
             <View style={styles.modalInputGroup}>
               <Text style={styles.modalInputLabel}>Current Password</Text>
               <TextInput
@@ -698,29 +698,29 @@ export default function PersonalizedScreen({
         <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setPermissionsModal(false)}>
           <View style={[styles.modalCard, { width: '85%' }]}>
             <Text style={styles.modalTitle}>App Permissions</Text>
-            
-            <ToggleCard 
+
+            <ToggleCard
               label="Camera Access"
               description="Used to capture vehicle and profile photos"
               value={perms.camera}
               onValueChange={(v) => setPerms({ ...perms, camera: v })}
             />
 
-            <ToggleCard 
+            <ToggleCard
               label="Photo Gallery"
               description="Used to upload documentation files"
               value={perms.gallery}
               onValueChange={(v) => setPerms({ ...perms, gallery: v })}
             />
 
-            <ToggleCard 
+            <ToggleCard
               label="Location Services"
               description="Used to find nearby garages & centers"
               value={perms.location}
               onValueChange={(v) => setPerms({ ...perms, location: v })}
             />
 
-            <ToggleCard 
+            <ToggleCard
               label="Push Notifications"
               description="Used to receive renewal alerts"
               value={perms.notifications}
@@ -728,7 +728,7 @@ export default function PersonalizedScreen({
               border={true}
             />
 
-            <ToggleCard 
+            <ToggleCard
               label="Simulate Offline Mode"
               description="Test network disconnection & retry alert widgets"
               value={isOffline}
@@ -736,8 +736,8 @@ export default function PersonalizedScreen({
               border={false}
             />
 
-            <TouchableOpacity 
-              onPress={() => setPermissionsModal(false)} 
+            <TouchableOpacity
+              onPress={() => setPermissionsModal(false)}
               style={styles.permissionsDoneBtn}
               activeOpacity={0.7}
             >
@@ -813,9 +813,9 @@ export default function PersonalizedScreen({
               ].map((faq, idx) => {
                 const isOpen = faqExpanded[idx];
                 return (
-                  <TouchableOpacity 
-                    key={idx} 
-                    onPress={() => toggleFaq(idx)} 
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() => toggleFaq(idx)}
                     style={styles.faqItem}
                     activeOpacity={0.8}
                   >
@@ -841,7 +841,7 @@ export default function PersonalizedScreen({
         <View style={styles.modalOverlay}>
           <View style={[styles.modalCard, { width: '85%' }]}>
             <Text style={styles.modalTitle}>Report a Technical Bug</Text>
-            
+
             <View style={styles.modalInputGroup}>
               <Text style={styles.modalInputLabel}>Issue Category</Text>
               <View style={styles.issueCatRow}>
@@ -891,7 +891,7 @@ export default function PersonalizedScreen({
           <View style={[styles.modalCard, { width: '85%' }]}>
             <Text style={styles.modalTitle}>App Feedback</Text>
             <Text style={styles.feedbackSub}>Rate your experience with Roadmate</Text>
-            
+
             <View style={styles.starsRow}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <TouchableOpacity key={star} onPress={() => setFeedbackRating(star)}>
@@ -928,7 +928,7 @@ export default function PersonalizedScreen({
       </Modal>
 
       {/* LOGOUT DIALOG MODAL */}
-      <LogoutDialog 
+      <LogoutDialog
         visible={logoutVisible}
         onCancel={() => setLogoutVisible(false)}
         onLogout={() => {

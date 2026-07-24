@@ -18,7 +18,7 @@ export const categories = [
   { id: 'EV Charging', name: 'EV Charging', emoji: '⚡', accent: '#8B5CF6', bg: '#F5F3FF', count: 2, image: require('../../assets/vehicle_placeholder.png') },
 ];
 
-export const providers = [
+export let providers = [
   // GARAGES
   {
     id: 'g1',
@@ -564,4 +564,8 @@ if (typeof setInterval !== 'undefined') {
     updateVendorAvailability(randomGarageId, randomStatus);
   }, 20000);
 }
+
+export const updateProvidersData = (newList) => {
+  providers = newList;
+};
 

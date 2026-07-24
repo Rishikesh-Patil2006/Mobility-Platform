@@ -3,37 +3,53 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Dimensions } fr
 
 import VendorHomeTab from './sub-screens/VendorHomeTab';
 import VendorListingsTab from './sub-screens/VendorListingsTab';
-import VendorManageTab from './sub-screens/VendorManageTab';
+import VendorTipsTab from './sub-screens/VendorTipsTab';
 import VendorProfileTab from './sub-screens/VendorProfileTab';
 
 const { width } = Dimensions.get('window');
 
 export default function VendorDashboardScreen({ navigation }) {
-  const [tab, setTab] = useState('home'); // home | listings | manage | profile
+  const [tab, setTab] = useState('home'); // home | listings | tips | profile
+  const [profileSegment, setProfileSegment] = useState('particulars');
+  const [profileModal, setProfileModal] = useState(null);
 
   const handleLogout = () => {
-    navigation.replace('Auth');
+    if (navigation && navigation.replace) {
+      navigation.replace('Auth');
+    }
+  };
+
+  const handleSelectTab = (targetTab, targetSegment = 'particulars', targetModal = null) => {
+    setTab(targetTab || 'home');
+    if (targetSegment) setProfileSegment(targetSegment);
+    if (targetModal !== undefined) setProfileModal(targetModal);
   };
 
   const renderTabContent = () => {
     switch (tab) {
       case 'home':
-        return <VendorHomeTab onSelectTab={setTab} />;
+        return <VendorHomeTab onSelectTab={handleSelectTab} />;
       case 'listings':
         return <VendorListingsTab />;
-      case 'manage':
-        return <VendorManageTab />;
+      case 'tips':
+        return <VendorTipsTab />;
       case 'profile':
-        return <VendorProfileTab onLogout={handleLogout} />;
+        return (
+          <VendorProfileTab
+            onLogout={handleLogout}
+            initialSegment={profileSegment}
+            initialModal={profileModal}
+          />
+        );
       default:
-        return <VendorHomeTab onSelectTab={setTab} />;
+        return <VendorHomeTab onSelectTab={handleSelectTab} />;
     }
   };
 
   const navItems = [
     { key: 'home', label: 'Home', emoji: '🏠' },
     { key: 'listings', label: 'Listings', emoji: '📋' },
-    { key: 'manage', label: 'Manage', emoji: '⚙️' },
+    { key: 'tips', label: 'Tips & Care', emoji: '🛠' },
     { key: 'profile', label: 'Profile', emoji: '👤' },
   ];
 
@@ -52,7 +68,7 @@ export default function VendorDashboardScreen({ navigation }) {
             return (
               <TouchableOpacity
                 key={item.key}
-                onPress={() => setTab(item.key)}
+                onPress={() => handleSelectTab(item.key)}
                 style={styles.navButton}
                 activeOpacity={0.7}
               >
@@ -84,30 +100,29 @@ const styles = StyleSheet.create({
   bottomNavContainer: {
     backgroundColor: 'white',
     borderTopWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingTop: 8,
-    paddingBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    borderTopColor: '#E2E8F0',
     elevation: 8,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   bottomNavRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    width: '100%',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
   },
   navButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: width / 4,
+    flex: 1,
   },
   emojiBox: {
-    width: 44,
-    height: 30,
-    borderRadius: 12,
+    width: 38,
+    height: 28,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -115,17 +130,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFF6FF',
   },
   navEmoji: {
-    fontSize: 18,
-    color: '#9CA3AF',
+    fontSize: 16,
   },
   navEmojiActive: {
-    color: '#1E3A8A',
+    fontSize: 18,
   },
   navLabel: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#9CA3AF',
-    marginTop: 4,
+    color: '#64748B',
+    marginTop: 2,
   },
   navLabelActive: {
     color: '#1E3A8A',

@@ -20,17 +20,17 @@ export function ProgressStepper({ currentStep = 1 }) {
             <React.Fragment key={step}>
               {/* Connector line */}
               {idx > 0 && (
-                <View 
+                <View
                   style={[
-                    stepperStyles.connector, 
+                    stepperStyles.connector,
                     currentStep >= stepNum ? stepperStyles.connectorActive : null
-                  ]} 
+                  ]}
                 />
               )}
 
               {/* Step circle */}
               <View style={stepperStyles.stepItem}>
-                <View 
+                <View
                   style={[
                     stepperStyles.circle,
                     isActive ? stepperStyles.circleActive : null,
@@ -45,9 +45,9 @@ export function ProgressStepper({ currentStep = 1 }) {
                     </Text>
                   )}
                 </View>
-                <Text 
+                <Text
                   style={[
-                    stepperStyles.label, 
+                    stepperStyles.label,
                     isActive ? stepperStyles.labelActive : null,
                     isCompleted ? stepperStyles.labelCompleted : null
                   ]}
@@ -135,8 +135,8 @@ const stepperStyles = StyleSheet.create({
 
 // ── 2. SEARCHABLE BRAND DROPDOWN ──
 const BRAND_OPTIONS = [
-  'Honda', 'Hyundai', 'Maruti Suzuki', 'Tata', 'Mahindra', 
-  'Toyota', 'Kia', 'MG', 'BYD', 'Hero', 'Honda Motorcycle', 
+  'Honda', 'Hyundai', 'Maruti Suzuki', 'Tata', 'Mahindra',
+  'Toyota', 'Kia', 'MG', 'BYD', 'Hero', 'Honda Motorcycle',
   'TVS', 'Royal Enfield', 'Bajaj', 'Yamaha', 'Suzuki', 'Other'
 ];
 
@@ -151,7 +151,7 @@ export function BrandDropdown({ selectedValue, onValueChange }) {
 
   return (
     <View style={dropdownStyles.container}>
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => setIsOpen(!isOpen)}
         style={dropdownStyles.trigger}
         activeOpacity={0.7}
@@ -356,9 +356,9 @@ export function ImageUploader({ images = [], onChange }) {
   return (
     <View style={uploadStyles.container}>
       <Text style={uploadStyles.label}>Vehicle Images</Text>
-      
+
       <View style={uploadStyles.triggerRow}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setCameraOpen(true)}
           style={uploadStyles.triggerBtn}
           activeOpacity={0.7}
@@ -367,7 +367,7 @@ export function ImageUploader({ images = [], onChange }) {
           <Text style={uploadStyles.triggerBtnText}>Camera</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setGalleryOpen(true)}
           style={[uploadStyles.triggerBtn, uploadStyles.triggerBtnOutline]}
           activeOpacity={0.7}
@@ -384,7 +384,7 @@ export function ImageUploader({ images = [], onChange }) {
             return (
               <View key={img} style={uploadStyles.thumbnailBox}>
                 <Image source={{ uri: img }} style={uploadStyles.thumbnail} />
-                
+
                 {isCover && (
                   <View style={uploadStyles.coverBadge}>
                     <Text style={uploadStyles.coverBadgeText}>Cover</Text>
@@ -392,7 +392,7 @@ export function ImageUploader({ images = [], onChange }) {
                 )}
 
                 {!isCover && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={() => handleMakeCover(img)}
                     style={uploadStyles.makeCoverBtn}
                     activeOpacity={0.8}
@@ -401,7 +401,7 @@ export function ImageUploader({ images = [], onChange }) {
                   </TouchableOpacity>
                 )}
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => handleRemove(img)}
                   style={uploadStyles.removeBtn}
                   activeOpacity={0.8}
@@ -446,7 +446,7 @@ export function ImageUploader({ images = [], onChange }) {
             </View>
 
             <View style={cameraStyles.actionRow}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 disabled={capturing}
                 onPress={startCameraCapture}
                 style={cameraStyles.shutterBtn}
@@ -490,8 +490,8 @@ export function ImageUploader({ images = [], onChange }) {
                 );
               })}
             </ScrollView>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               onPress={() => setGalleryOpen(false)}
               style={galleryStyles.doneBtn}
             >
@@ -841,7 +841,7 @@ export function VehicleAlertBadge({ docName, expiryDateStr, onPress }) {
     const cleanDateStr = expiryDateStr.replace(/,/g, '');
     const months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
     const parts = cleanDateStr.split(' ');
-    
+
     let diffDays = 15;
 
     if (parts.length >= 3) {
@@ -852,8 +852,8 @@ export function VehicleAlertBadge({ docName, expiryDateStr, onPress }) {
       if (monthIndex !== undefined && !isNaN(day) && !isNaN(year)) {
         const expiryDate = new Date(year, monthIndex, day);
         const today = new Date();
-        expiryDate.setHours(0,0,0,0);
-        today.setHours(0,0,0,0);
+        expiryDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
         const diffTime = expiryDate.getTime() - today.getTime();
         diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       }
@@ -910,10 +910,10 @@ export function VehicleAlertBadge({ docName, expiryDateStr, onPress }) {
   const status = getStatusDetails();
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
+    <TouchableOpacity
+      onPress={onPress}
       style={[
-        badgeStyles.badge, 
+        badgeStyles.badge,
         { backgroundColor: status.bg, borderColor: status.border }
       ]}
       activeOpacity={0.7}
@@ -976,8 +976,8 @@ export function PremiumVehicleCard({ vehicle, onPress, onOpenDoc }) {
   ];
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
+    <TouchableOpacity
+      onPress={onPress}
       style={cardStyles.card}
       activeOpacity={0.9}
     >
@@ -1126,7 +1126,7 @@ const cardStyles = StyleSheet.create({
 export function VehicleImageCarousel({ images = [] }) {
   const [active, setActive] = useState(0);
 
-  const listImages = images.length > 0 
+  const listImages = images.length > 0
     ? images.map(img => typeof img === 'string' ? { uri: img } : img)
     : [require('../../assets/vehicle_placeholder.png')];
 
@@ -1155,12 +1155,12 @@ export function VehicleImageCarousel({ images = [] }) {
       {listImages.length > 1 && (
         <View style={carouselStyles.pagination}>
           {listImages.map((_, idx) => (
-            <View 
-              key={idx} 
+            <View
+              key={idx}
               style={[
                 carouselStyles.dot,
                 active === idx ? carouselStyles.dotActive : null
-              ]} 
+              ]}
             />
           ))}
         </View>
@@ -1322,9 +1322,9 @@ export function VehicleCard({ vehicle, onPress, children }) {
       </View>
 
       <View style={newCardStyles.bodyRow}>
-        <Image 
-          source={vehicle.images && vehicle.images.length > 0 ? { uri: vehicle.images[0] } : require('../../assets/vehicle_placeholder.png')} 
-          style={newCardStyles.image} 
+        <Image
+          source={vehicle.images && vehicle.images.length > 0 ? { uri: vehicle.images[0] } : require('../../assets/vehicle_placeholder.png')}
+          style={newCardStyles.image}
           resizeMode="cover"
         />
         <View style={newCardStyles.specCol}>
@@ -1552,8 +1552,8 @@ const statusCardStyles = StyleSheet.create({
 // ── 15. VEHICLE QUICK ACTION CARD ──
 export function VehicleQuickActionCard({ label, emoji, color, bg, border, onPress }) {
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
+    <TouchableOpacity
+      onPress={onPress}
       style={[actionCardStyles.card, { backgroundColor: bg, borderColor: border }]}
       activeOpacity={0.8}
     >
@@ -1618,12 +1618,12 @@ export function VehicleReviewCard({ brand, model, number, type, fuel, customBran
 
   return (
     <View style={reviewStyles.container}>
-      <Image 
-        source={images.length > 0 ? { uri: images[0] } : require('../../assets/vehicle_placeholder.png')} 
+      <Image
+        source={images.length > 0 ? { uri: images[0] } : require('../../assets/vehicle_placeholder.png')}
         style={reviewStyles.image}
         resizeMode="cover"
       />
-      
+
       <View style={reviewStyles.recap}>
         <Text style={reviewStyles.title}>Worksheet Specifications</Text>
         <VehicleDetailRow label="Vehicle Category" value={getVehicleCategory(type)} />
@@ -1723,16 +1723,16 @@ export function VehicleFilterDropdown({ selectedOption, onSelectOption, vehicles
 
   return (
     <View style={filterDropdownStyles.wrapper}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[
-          filterDropdownStyles.trigger, 
+          filterDropdownStyles.trigger,
           darkTheme ? filterDropdownStyles.triggerDark : filterDropdownStyles.triggerLight
-        ]} 
+        ]}
         onPress={() => setOpen(true)}
         activeOpacity={0.75}
       >
         <Text style={[
-          filterDropdownStyles.triggerText, 
+          filterDropdownStyles.triggerText,
           darkTheme ? filterDropdownStyles.triggerTextDark : filterDropdownStyles.triggerTextLight
         ]}>
           {labelText} ▼
@@ -1745,9 +1745,9 @@ export function VehicleFilterDropdown({ selectedOption, onSelectOption, vehicles
         animationType="fade"
         onRequestClose={() => setOpen(false)}
       >
-        <TouchableOpacity 
-          style={filterDropdownStyles.overlay} 
-          activeOpacity={1} 
+        <TouchableOpacity
+          style={filterDropdownStyles.overlay}
+          activeOpacity={1}
           onPress={() => setOpen(false)}
         >
           <View style={filterDropdownStyles.menu} onStartShouldSetResponder={() => true}>
@@ -2027,8 +2027,8 @@ const filterDropdownStyles = StyleSheet.create({
 // ── 19. VEHICLE TRACKER CARD ──
 export function VehicleTrackerCard({ title, subtitle, value, icon, onPress, color = '#2563EB', bg = '#EFF6FF', border = '#BFDBFE' }) {
   return (
-    <TouchableOpacity 
-      style={[trackerCardStyles.card, { backgroundColor: bg, borderColor: border }]} 
+    <TouchableOpacity
+      style={[trackerCardStyles.card, { backgroundColor: bg, borderColor: border }]}
       onPress={onPress}
       activeOpacity={0.8}
     >
@@ -2324,8 +2324,8 @@ export function VehicleSpecificationCard({ title, children }) {
   const [expanded, setExpanded] = useState(true);
   return (
     <View style={specCardStyles.card}>
-      <TouchableOpacity 
-        style={specCardStyles.header} 
+      <TouchableOpacity
+        style={specCardStyles.header}
         onPress={() => setExpanded(!expanded)}
         activeOpacity={0.7}
       >
@@ -2378,7 +2378,7 @@ export function ChallanCard({ violation, amount, status, date, location, onViewD
         <Text style={challanStyles.violation} numberOfLines={1}>{violation}</Text>
         <PenaltyStatusChip status={status} />
       </View>
-      
+
       {vehicleName ? (
         <Text style={{ fontSize: 11, color: '#2563EB', fontWeight: '700', marginBottom: 6 }}>
           🚗 {vehicleName} ({vehicleNumber})
@@ -2391,9 +2391,9 @@ export function ChallanCard({ violation, amount, status, date, location, onViewD
       </View>
 
       <Text style={challanStyles.location} numberOfLines={1}>📍 {location}</Text>
-      
-      <TouchableOpacity 
-        style={challanStyles.btn} 
+
+      <TouchableOpacity
+        style={challanStyles.btn}
         onPress={onViewDetails}
         activeOpacity={0.7}
       >
@@ -2465,10 +2465,10 @@ const challanStyles = StyleSheet.create({
 export function PenaltyStatusChip({ status }) {
   const isPaid = status === 'Paid';
   return (
-    <View 
+    <View
       style={[
-        statusChipStyles.chip, 
-        { 
+        statusChipStyles.chip,
+        {
           backgroundColor: isPaid ? '#EFF6FF' : '#FEF2F2',
           borderColor: isPaid ? '#BFDBFE' : '#FECACA'
         }
@@ -2570,14 +2570,14 @@ export function VehicleDocumentCard({ document, onViewDetails, onRenew }) {
       </View>
 
       <View style={docStyles.btnRow}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => onViewDetails && onViewDetails(document)}
           style={[docStyles.actionBtn, docStyles.viewBtn]}
           activeOpacity={0.7}
         >
           <Text style={docStyles.viewBtnText}>👁️ View Details</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={handleRenew}
           style={[docStyles.actionBtn, docStyles.renewBtn]}
           activeOpacity={0.7}

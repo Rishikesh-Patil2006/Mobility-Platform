@@ -51,7 +51,22 @@ window.require = function(moduleName) {
 `;
 
 if (!indexHtml.includes('window.require = function')) {
-  indexHtml = indexHtml.replace('</head>', requirePolyfill + '</head>');
+  // Try to inject before </head> (case‑insensitive)
+  const headCloseRegex = /<\/head\s*>/i;
+  if (headCloseRegex.test(indexHtml)) {
+    indexHtml = indexHtml.replace(headCloseRegex, requirePolyfill + '</head>');
+    console.log('Injected require polyfill before </head>');
+  } else {
+    // Fallback: inject before the first <script> tag
+    const firstScript = /<script[^>]*>/i;
+    if (firstScript.test(indexHtml)) {
+      indexHtml = indexHtml.replace(firstScript, requirePolyfill + firstScript.source);
+      console.log('Injected require polyfill before first <script>');
+    } else {
+      // As a last resort, prepend to the file
+      indexHtml = requirePolyfill + indexHtml;
+      console.log('Injected require polyfill at start of file');
+    }
+  }
   fs.writeFileSync(indexHtmlPath, indexHtml);
-  console.log('Successfully injected require polyfill into dist/index.html');
 }

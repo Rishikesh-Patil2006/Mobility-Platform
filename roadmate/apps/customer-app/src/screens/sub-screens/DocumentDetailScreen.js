@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  Dimensions, 
-  Image, 
-  Alert, 
-  Modal, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  Image,
+  Alert,
+  Modal,
   ActivityIndicator,
   TextInput
 } from 'react-native';
@@ -47,13 +47,13 @@ const docConfig = {
   tax: { emoji: '🟡', color: '#F59E0B', bg: '#FFFBEB', source: 'State Vahan Portal' },
 };
 
-export default function DocumentDetailScreen({ 
-  docType, 
-  vehicleId = '1', 
-  documents = [], 
-  onDeleteDocument, 
-  onReplaceDocument, 
-  onBack 
+export default function DocumentDetailScreen({
+  docType,
+  vehicleId = '1',
+  documents = [],
+  onDeleteDocument,
+  onReplaceDocument,
+  onBack
 }) {
   const cfg = docConfig[docType] || docConfig.puc;
   const docTitle = docNames[docType] || 'Document';
@@ -65,7 +65,7 @@ export default function DocumentDetailScreen({
   const [zoomVisible, setZoomVisible] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  
+
   // Replace document states
   const [replaceModalOpen, setReplaceModalOpen] = useState(false);
   const [replaceSource, setReplaceSource] = useState(null); // 'camera' | 'gallery' | 'pdf'
@@ -122,14 +122,14 @@ export default function DocumentDetailScreen({
       `Are you sure you want to delete your ${docTitle}?`,
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
+        {
+          text: 'Delete',
           style: 'destructive',
           onPress: () => {
             onDeleteDocument(vehicleId, docType);
             Alert.alert('Deleted', `${docTitle} has been deleted.`);
             onBack();
-          } 
+          }
         }
       ]
     );
@@ -234,10 +234,10 @@ export default function DocumentDetailScreen({
       </View>
 
       <ScrollView style={styles.scrollBody} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
-        
+
         {/* Document Thumbnail Card (Tap to zoom) */}
-        <TouchableOpacity 
-          style={styles.imageCard} 
+        <TouchableOpacity
+          style={styles.imageCard}
           onPress={() => setZoomVisible(true)}
           activeOpacity={0.9}
         >
@@ -251,7 +251,7 @@ export default function DocumentDetailScreen({
         {/* Status Alert Widget */}
         <View style={[
           styles.alertCard,
-          { 
+          {
             backgroundColor: isExp ? '#FEF2F2' : isSoon ? '#FFFBEB' : '#F0FDF4',
             borderColor: isExp ? '#FECACA' : isSoon ? '#FDE68A' : '#BBF7D0'
           }
@@ -318,8 +318,8 @@ export default function DocumentDetailScreen({
       <View style={styles.actionsPanel}>
         <View style={styles.buttonsRow}>
           {/* Download */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.downloadButton]} 
+          <TouchableOpacity
+            style={[styles.actionButton, styles.downloadButton]}
             onPress={handleDownload}
             activeOpacity={0.7}
           >
@@ -334,8 +334,8 @@ export default function DocumentDetailScreen({
           </TouchableOpacity>
 
           {/* Share */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.shareButton]} 
+          <TouchableOpacity
+            style={[styles.actionButton, styles.shareButton]}
             onPress={handleShare}
             activeOpacity={0.7}
           >
@@ -350,8 +350,8 @@ export default function DocumentDetailScreen({
           </TouchableOpacity>
 
           {/* Replace */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.replaceButton]} 
+          <TouchableOpacity
+            style={[styles.actionButton, styles.replaceButton]}
             onPress={() => setReplaceModalOpen(true)}
             activeOpacity={0.7}
           >
@@ -360,8 +360,8 @@ export default function DocumentDetailScreen({
           </TouchableOpacity>
 
           {/* Delete */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.deleteButton]} 
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deleteButton]}
             onPress={handleDelete}
             activeOpacity={0.7}
           >
@@ -369,7 +369,7 @@ export default function DocumentDetailScreen({
             <Text style={styles.deleteText}>Delete</Text>
           </TouchableOpacity>
         </View>
-        
+
         <Text style={styles.syncTimestampText}>
           Last synced · {detail.uploadDate || '25 Jun 2026'} via {cfg.source}
         </Text>
@@ -461,7 +461,7 @@ export default function DocumentDetailScreen({
                     onChangeText={setNewExpiryDate}
                     placeholder="e.g. Dec 31, 2030"
                   />
-                  
+
                   <TouchableOpacity onPress={() => setReplaceSource(null)} style={styles.rescanBtn}>
                     <Text style={styles.rescanBtnText}>Re-scan Document</Text>
                   </TouchableOpacity>

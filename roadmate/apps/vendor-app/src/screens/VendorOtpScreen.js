@@ -1,11 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Animated, Easing, ActivityIndicator, Dimensions } from 'react-native';
+import { useVendorProfile } from '../context/VendorProfileContext';
 
 const { width, height } = Dimensions.get('window');
 const CORRECT_OTP = '123456';
 
 export default function VendorOtpScreen({ route, navigation }) {
-  const { mode = 'login', email = 'speedauto@gmail.com', name = '', mobile = '', category = '' } = route.params || {};
+  const {
+    mode = 'login',
+    email = '',
+    name = '',
+    mobile = '',
+    whatsapp = '',
+    businessName = '',
+    experience = '',
+    password = '',
+    category = '',
+  } = route.params || {};
+
+  const { signup, login: loginContext, profile } = useVendorProfile();
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
@@ -94,6 +107,20 @@ export default function VendorOtpScreen({ route, navigation }) {
     setTimeout(() => {
       setVerifying(false);
       if (code === CORRECT_OTP) {
+        if (mode === 'register') {
+          signup({
+            businessName,
+            ownerName: name,
+            businessEmail: email,
+            mobileNumber: mobile,
+            whatsAppNumber: whatsapp,
+            yearsOfExperience: experience,
+            password: password,
+            mainCategory: category,
+          });
+        } else {
+          loginContext(email);
+        }
         setSuccess(true);
         triggerConfetti();
         Animated.parallel([
@@ -113,7 +140,9 @@ export default function VendorOtpScreen({ route, navigation }) {
     if (mode === 'register') {
       navigation.replace('PendingApproval', { email, name, mobile, category, showOnboarding: true });
     } else {
-      if (email === 'speedauto@gmail.com') {
+      // Check pre-saved email statuses or the context profile loaded
+      const isVerified = email === 'speedauto@gmail.com' || email === 'crystalwash@gmail.com' || email === 'rescue247@gmail.com';
+      if (isVerified) {
         navigation.replace('Main');
       } else {
         navigation.replace('PendingApproval', { email, showOnboarding: false });

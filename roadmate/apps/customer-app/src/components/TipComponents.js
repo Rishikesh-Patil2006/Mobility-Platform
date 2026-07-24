@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image, 
-  Dimensions, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Dimensions,
   ActivityIndicator,
   Share
 } from 'react-native';
@@ -43,8 +43,8 @@ export const TipCard = React.memo(function TipCard({ tip, bookmarked, onBookmark
   const imageSource = serviceImages[tip.imageKey] || serviceImages.placeholder;
 
   return (
-    <TouchableOpacity 
-      style={styles.tipCardContainer} 
+    <TouchableOpacity
+      style={styles.tipCardContainer}
       onPress={onPress}
       activeOpacity={0.9}
     >
@@ -53,8 +53,8 @@ export const TipCard = React.memo(function TipCard({ tip, bookmarked, onBookmark
         <View style={styles.categoryBadge}>
           <Text style={styles.categoryBadgeText}>{tip.category}</Text>
         </View>
-        <TouchableOpacity 
-          style={styles.floatingFavBtn} 
+        <TouchableOpacity
+          style={styles.floatingFavBtn}
           onPress={onBookmarkToggle}
           activeOpacity={0.7}
         >
@@ -65,7 +65,7 @@ export const TipCard = React.memo(function TipCard({ tip, bookmarked, onBookmark
       <View style={styles.tipCardContent}>
         <Text style={styles.tipCardTitle} numberOfLines={2}>{tip.title}</Text>
         <Text style={styles.tipCardDesc} numberOfLines={2}>{tip.description}</Text>
-        
+
         <View style={styles.tipCardFooter}>
           <Text style={styles.tipCardMeta}>⏳ {tip.readTime} · 👤 {tip.author}</Text>
         </View>
@@ -79,14 +79,14 @@ export const FeaturedBanner = React.memo(function FeaturedBanner({ tip, onPress 
   const imageSource = serviceImages[tip.imageKey] || serviceImages.placeholder;
 
   return (
-    <TouchableOpacity 
-      style={styles.featuredContainer} 
+    <TouchableOpacity
+      style={styles.featuredContainer}
       onPress={onPress}
       activeOpacity={0.9}
     >
       <Image source={imageSource} style={styles.featuredImg} resizeMode="cover" />
       <View style={styles.featuredOverlay} />
-      
+
       <View style={styles.featuredContent}>
         <View style={styles.featuredTag}>
           <Text style={styles.featuredTagText}>🔥 FEATURED GUIDE</Text>
@@ -104,8 +104,8 @@ export const VideoCard = React.memo(function VideoCard({ video, bookmarked, onBo
   const imageSource = serviceImages[video.imageKey] || serviceImages.placeholder;
 
   return (
-    <TouchableOpacity 
-      style={styles.videoCardContainer} 
+    <TouchableOpacity
+      style={styles.videoCardContainer}
       onPress={onPress}
       activeOpacity={0.9}
     >
@@ -186,10 +186,10 @@ export const VideoPlayer = React.memo(function VideoPlayer({ video, isMuted, onM
   return (
     <View style={[styles.playerContainer, isFullscreen ? styles.playerFullscreen : null]}>
       {/* Video Content Graphic */}
-      <Image 
-        source={serviceImages[video.imageKey] || serviceImages.placeholder} 
-        style={styles.playerVideoImage} 
-        resizeMode="cover" 
+      <Image
+        source={serviceImages[video.imageKey] || serviceImages.placeholder}
+        style={styles.playerVideoImage}
+        resizeMode="cover"
       />
       <View style={styles.playerShadowOverlay} />
 
@@ -210,7 +210,7 @@ export const VideoPlayer = React.memo(function VideoPlayer({ video, isMuted, onM
 
       {/* Floating Action Controls */}
       <View style={styles.playerControlOverlay}>
-        
+
         {/* Info panel */}
         <View style={styles.playerInfoRow}>
           <View style={styles.playerCategoryPill}>
@@ -222,7 +222,7 @@ export const VideoPlayer = React.memo(function VideoPlayer({ video, isMuted, onM
 
         {/* Progress Bar & Buttons */}
         <View style={styles.playerBottomActions}>
-          
+
           {/* Timeline Row */}
           <View style={styles.timelineRow}>
             <Text style={styles.timelineText}>{formatTime(seconds)}</Text>
@@ -238,7 +238,7 @@ export const VideoPlayer = React.memo(function VideoPlayer({ video, isMuted, onM
               <TouchableOpacity onPress={togglePlay} style={styles.toolbarBtn}>
                 <Text style={styles.toolbarEmoji}>{isPlaying ? '⏸️' : '▶️'}</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity onPress={onMuteToggle} style={styles.toolbarBtn}>
                 <Text style={styles.toolbarEmoji}>{isMuted ? '🔇' : '🔊'}</Text>
               </TouchableOpacity>
@@ -248,8 +248,8 @@ export const VideoPlayer = React.memo(function VideoPlayer({ video, isMuted, onM
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity 
-              onPress={() => setIsFullscreen(!isFullscreen)} 
+            <TouchableOpacity
+              onPress={() => setIsFullscreen(!isFullscreen)}
               style={styles.toolbarBtn}
             >
               <Text style={styles.toolbarEmoji}>{isFullscreen ? '📴' : '📺'}</Text>

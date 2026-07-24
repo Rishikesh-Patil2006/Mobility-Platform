@@ -39,7 +39,7 @@ export default function ServicesHomeScreen({ onBack, onSelectCategory, savedProv
 
   // Filter sections by search query
   const filteredSections = serviceSections.map(section => {
-    const matchedItems = section.items.filter(item => 
+    const matchedItems = section.items.filter(item =>
       item.name.toLowerCase().includes(search.toLowerCase()) ||
       item.description.toLowerCase().includes(search.toLowerCase())
     );
@@ -128,7 +128,7 @@ export default function ServicesHomeScreen({ onBack, onSelectCategory, savedProv
 
         {/* ── Restructured Categories Catalog ── */}
         {filteredSections.map((section, idx) => (
-          <CategorySection 
+          <CategorySection
             key={idx}
             title={section.title}
             items={section.items}

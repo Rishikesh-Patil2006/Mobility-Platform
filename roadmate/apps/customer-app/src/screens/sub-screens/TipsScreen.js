@@ -1,22 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  ScrollView, 
-  TextInput, 
-  Dimensions, 
-  Image, 
-  Modal, 
-  Alert 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  Dimensions,
+  Image,
+  Modal,
+  Alert
 } from 'react-native';
-import { 
-  CategoryChip, 
-  TipCard, 
-  FeaturedBanner, 
-  VideoCard, 
-  VideoPlayer 
+import {
+  CategoryChip,
+  TipCard,
+  FeaturedBanner,
+  VideoCard,
+  VideoPlayer
 } from '../../components/TipComponents';
 
 const { width, height } = Dimensions.get('window');
@@ -154,7 +154,7 @@ const categories = [
 export function getServiceCategoryForTip(tip) {
   if (!tip) return 'Garage';
   const titleLower = (tip.title || '').toLowerCase();
-  const catLower   = (tip.category || '').toLowerCase();
+  const catLower = (tip.category || '').toLowerCase();
 
   if (titleLower.includes('tyre') || titleLower.includes('tire') || catLower.includes('tyre')) return 'Tyre Shop';
   if (titleLower.includes('oil') || titleLower.includes('engine') || catLower.includes('engine') || catLower.includes('mileage')) return 'Garage';
@@ -182,10 +182,10 @@ export function getServiceCategoryForTip(tip) {
   return map[tip.category] || 'Garage';
 }
 
-export default function TipsScreen({ 
-  onBack, 
-  bookmarkedTips = [], 
-  bookmarkedVideos = [], 
+export default function TipsScreen({
+  onBack,
+  bookmarkedTips = [],
+  bookmarkedVideos = [],
   likedTips = [],
   likedVideos = [],
   recentlyViewedTips = [],
@@ -199,7 +199,7 @@ export default function TipsScreen({
   const [activeTab, setActiveTab] = useState('articles'); // articles | reels | saved
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  
+
   // Immersive Reels swipe states
   const [activeReelIndex, setActiveReelIndex] = useState(0);
   const [reelsMuted, setReelsMuted] = useState(false);
@@ -229,8 +229,8 @@ export default function TipsScreen({
   // Filtered Articles
   const filteredTips = useMemo(() => {
     return mockTips.filter(tip => {
-      const matchesSearch = tip.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            tip.keywords.some(k => k.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesSearch = tip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tip.keywords.some(k => k.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCat = selectedCategory === 'All' || tip.category === selectedCategory;
       return matchesSearch && matchesCat;
     });
@@ -286,7 +286,7 @@ export default function TipsScreen({
 
       {/* Tabs segment controller */}
       <View style={styles.tabBar}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setActiveTab('articles')}
           style={[styles.tabButton, activeTab === 'articles' ? styles.tabButtonActive : null]}
         >
@@ -295,7 +295,7 @@ export default function TipsScreen({
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setActiveTab('reels')}
           style={[styles.tabButton, activeTab === 'reels' ? styles.tabButtonActive : null]}
         >
@@ -304,7 +304,7 @@ export default function TipsScreen({
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setActiveTab('saved')}
           style={[styles.tabButton, activeTab === 'saved' ? styles.tabButtonActive : null]}
         >
@@ -319,7 +319,7 @@ export default function TipsScreen({
       {/* VIEW 1: ARTICLES HUB */}
       {activeTab === 'articles' && (
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false} contentContainerStyle={styles.bodyScrollPadding}>
-          
+
           {/* Search bar wrapper */}
           <View style={styles.searchWrapper}>
             <Text style={styles.searchIcon}>🔍</Text>
@@ -333,14 +333,14 @@ export default function TipsScreen({
           </View>
 
           {/* Category scrolling row */}
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
             style={styles.categoriesRow}
             contentContainerStyle={styles.categoriesRowContent}
           >
             {categories.map((cat) => (
-              <CategoryChip 
+              <CategoryChip
                 key={cat}
                 label={cat}
                 active={selectedCategory === cat}
@@ -353,7 +353,7 @@ export default function TipsScreen({
           {selectedCategory === 'All' && searchQuery === '' && (
             <View>
               <Text style={styles.sectionHeading}>Spotlight Guide</Text>
-              <FeaturedBanner 
+              <FeaturedBanner
                 tip={mockTips[1]} // Monsoon Care special
                 onPress={() => handleArticlePress(mockTips[1])}
               />
@@ -374,7 +374,7 @@ export default function TipsScreen({
             </View>
           ) : (
             filteredTips.map((tip) => (
-              <TipCard 
+              <TipCard
                 key={tip.id}
                 tip={tip}
                 bookmarked={bookmarkedTips.includes(tip.id)}
@@ -393,8 +393,8 @@ export default function TipsScreen({
                   const rTip = mockTips.find(t => t.id === rId);
                   if (!rTip) return null;
                   return (
-                    <TouchableOpacity 
-                      key={rId} 
+                    <TouchableOpacity
+                      key={rId}
                       style={styles.recentCard}
                       onPress={() => handleArticlePress(rTip)}
                       activeOpacity={0.8}
@@ -416,7 +416,7 @@ export default function TipsScreen({
         <View style={styles.reelsContainer}>
           {mockVideos.length > 0 ? (
             <View style={styles.reelPlayerWrapper}>
-              <VideoPlayer 
+              <VideoPlayer
                 video={mockVideos[activeReelIndex]}
                 isMuted={reelsMuted}
                 onMuteToggle={() => setReelsMuted(!reelsMuted)}
@@ -425,8 +425,8 @@ export default function TipsScreen({
               {/* Sidebar Action Buttons Overlay */}
               <View style={styles.reelsSidebar}>
                 {/* Like Button */}
-                <TouchableOpacity 
-                  onPress={() => onLikeVideoToggle(mockVideos[activeReelIndex].id)} 
+                <TouchableOpacity
+                  onPress={() => onLikeVideoToggle(mockVideos[activeReelIndex].id)}
                   style={[styles.sidebarBtn, likedVideos.includes(mockVideos[activeReelIndex].id) ? styles.sidebarBtnLiked : null]}
                 >
                   <Text style={styles.sidebarEmoji}>❤️</Text>
@@ -436,8 +436,8 @@ export default function TipsScreen({
                 </TouchableOpacity>
 
                 {/* Bookmark Button */}
-                <TouchableOpacity 
-                  onPress={() => onBookmarkVideoToggle(mockVideos[activeReelIndex].id)} 
+                <TouchableOpacity
+                  onPress={() => onBookmarkVideoToggle(mockVideos[activeReelIndex].id)}
                   style={[styles.sidebarBtn, bookmarkedVideos.includes(mockVideos[activeReelIndex].id) ? styles.sidebarBtnSaved : null]}
                 >
                   <Text style={styles.sidebarEmoji}>⭐️</Text>
@@ -445,8 +445,8 @@ export default function TipsScreen({
                 </TouchableOpacity>
 
                 {/* Share Button */}
-                <TouchableOpacity 
-                  onPress={() => handleSocialShare(mockVideos[activeReelIndex].title)} 
+                <TouchableOpacity
+                  onPress={() => handleSocialShare(mockVideos[activeReelIndex].title)}
                   style={styles.sidebarBtn}
                 >
                   <Text style={styles.sidebarEmoji}>✉️</Text>
@@ -454,8 +454,8 @@ export default function TipsScreen({
                 </TouchableOpacity>
 
                 {/* Report Button */}
-                <TouchableOpacity 
-                  onPress={() => Alert.alert('Report Video', 'Thank you for reporting. Our moderators will review this reel within 24 hours.')} 
+                <TouchableOpacity
+                  onPress={() => Alert.alert('Report Video', 'Thank you for reporting. Our moderators will review this reel within 24 hours.')}
                   style={styles.sidebarBtn}
                 >
                   <Text style={styles.sidebarEmoji}>⚠️</Text>
@@ -465,15 +465,15 @@ export default function TipsScreen({
 
               {/* Feed Navigation Buttons Overlay */}
               <View style={styles.feedNavigationPanel}>
-                <TouchableOpacity 
-                  onPress={handleReelSwipeDown} 
+                <TouchableOpacity
+                  onPress={handleReelSwipeDown}
                   style={[styles.navSwipeBtn, activeReelIndex === 0 ? styles.navSwipeBtnDisabled : null]}
                   disabled={activeReelIndex === 0}
                 >
                   <Text style={styles.navSwipeText}>▲ Previous</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                  onPress={handleReelSwipeUp} 
+                <TouchableOpacity
+                  onPress={handleReelSwipeUp}
                   style={styles.navSwipeBtn}
                 >
                   <Text style={styles.navSwipeText}>▼ Next Shorts</Text>
@@ -492,7 +492,7 @@ export default function TipsScreen({
       {/* VIEW 3: SAVED CONTENT BOOKMARKS SHELF */}
       {activeTab === 'saved' && (
         <ScrollView style={styles.body} showsVerticalScrollIndicator={false} contentContainerStyle={styles.bodyScrollPadding}>
-          
+
           <Text style={styles.sectionHeading}>Saved Tips Articles</Text>
           {savedTipsList.length === 0 ? (
             <View style={styles.savedEmptyBox}>
@@ -502,7 +502,7 @@ export default function TipsScreen({
             </View>
           ) : (
             savedTipsList.map((t) => (
-              <TipCard 
+              <TipCard
                 key={t.id}
                 tip={t}
                 bookmarked={true}
@@ -522,7 +522,7 @@ export default function TipsScreen({
           ) : (
             <View style={styles.savedVideosGrid}>
               {savedVideosList.map((vid) => (
-                <VideoCard 
+                <VideoCard
                   key={vid.id}
                   video={vid}
                   bookmarked={true}
@@ -543,16 +543,16 @@ export default function TipsScreen({
       <Modal visible={selectedTip !== null} animationType="slide" transparent>
         <View style={styles.detailsOverlay}>
           <View style={styles.detailsCard}>
-            
+
             {/* Modal Top Navigation Bar */}
             <View style={styles.detailsHeader}>
               <TouchableOpacity onPress={() => setSelectedTip(null)} style={styles.detailsCloseBtn}>
                 <Text style={styles.detailsCloseText}>✕ Close</Text>
               </TouchableOpacity>
-              
+
               <View style={styles.detailsActionsRow}>
                 {/* Like */}
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => selectedTip && onLikeTipToggle(selectedTip.id)}
                   style={styles.detailsActionBtn}
                 >
@@ -562,7 +562,7 @@ export default function TipsScreen({
                 </TouchableOpacity>
 
                 {/* Bookmark */}
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => selectedTip && onBookmarkTipToggle(selectedTip.id)}
                   style={styles.detailsActionBtn}
                 >
@@ -572,7 +572,7 @@ export default function TipsScreen({
                 </TouchableOpacity>
 
                 {/* Share */}
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => selectedTip && handleSocialShare(selectedTip.title)}
                   style={styles.detailsActionBtn}
                 >
@@ -584,21 +584,21 @@ export default function TipsScreen({
             {selectedTip && (
               <ScrollView style={styles.detailsScrollBody} showsVerticalScrollIndicator={false}>
                 {/* Article Cover */}
-                <Image 
-                  source={serviceImages[selectedTip.imageKey] || serviceImages.placeholder} 
-                  style={styles.detailsCoverImage} 
-                  resizeMode="cover" 
+                <Image
+                  source={serviceImages[selectedTip.imageKey] || serviceImages.placeholder}
+                  style={styles.detailsCoverImage}
+                  resizeMode="cover"
                 />
 
                 <View style={styles.detailsMetaPadding}>
-                  
+
                   {/* Category badge */}
                   <View style={styles.detailsCategoryPill}>
                     <Text style={styles.detailsCategoryText}>{selectedTip.category}</Text>
                   </View>
 
                   <Text style={styles.detailsTitle}>{selectedTip.title}</Text>
-                  
+
                   <View style={styles.detailsAuthorBlock}>
                     <View style={styles.authorAvatar}>
                       <Text style={styles.authorAvatarText}>RM</Text>
@@ -612,7 +612,7 @@ export default function TipsScreen({
                   <Text style={styles.detailsDivider} />
 
                   <Text style={styles.detailsFullText}>{selectedTip.content}</Text>
-                  
+
                   <Text style={styles.detailsDivider} />
 
                   {/* Recommended Service Providers Section */}
@@ -649,8 +649,8 @@ export default function TipsScreen({
                     .filter(t => t.id !== selectedTip.id && (t.category === selectedTip.category || t.id === 't5'))
                     .slice(0, 2)
                     .map(rel => (
-                      <TouchableOpacity 
-                        key={rel.id} 
+                      <TouchableOpacity
+                        key={rel.id}
                         style={styles.relatedCard}
                         onPress={() => setSelectedTip(rel)}
                         activeOpacity={0.8}
