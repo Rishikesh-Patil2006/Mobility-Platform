@@ -951,7 +951,7 @@ const styles = StyleSheet.create({
   scrollPadding: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 32,
+    paddingBottom: 88,
   },
   sectionCard: {
     backgroundColor: 'white',
@@ -973,8 +973,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 16,
+    fontWeight: '700',
     color: '#0F172A',
     textTransform: 'uppercase',
     letterSpacing: 0.5,

@@ -1169,7 +1169,10 @@ export default function CustomerDashboardScreen({ navigation }) {
     <View style={styles.container}>
       <ScrollView
         style={styles.pageScroll}
-        contentContainerStyle={styles.pageScrollContent}
+        contentContainerStyle={[
+          styles.pageScrollContent,
+          !screen && styles.pageScrollWithBottomNav
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {isOffline && (
@@ -1188,32 +1191,32 @@ export default function CustomerDashboardScreen({ navigation }) {
         <View style={styles.mainContainer}>
           {renderContent()}
         </View>
-
-        {/* Custom Bottom Nav Bar */}
-        {!screen && (
-          <View style={styles.bottomNav}>
-            <TouchableOpacity onPress={() => setTab('home')} style={styles.navButton} activeOpacity={0.7}>
-              <Text style={[styles.navIcon, tab === 'home' ? styles.navIconActive : null]}>🏠</Text>
-              <Text style={[styles.navText, tab === 'home' ? styles.navTextActive : null]}>Home</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setTab('services')} style={styles.navButton} activeOpacity={0.7}>
-              <Text style={[styles.navIcon, tab === 'services' ? styles.navIconActive : null]}>🛠️</Text>
-              <Text style={[styles.navText, tab === 'services' ? styles.navTextActive : null]}>Services</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setTab('tracker')} style={styles.navButton} activeOpacity={0.7}>
-              <Text style={[styles.navIcon, tab === 'tracker' ? styles.navIconActive : null]}>📊</Text>
-              <Text style={[styles.navText, tab === 'tracker' ? styles.navTextActive : null]}>Vehicle Tracker</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setTab('personalized')} style={styles.navButton} activeOpacity={0.7}>
-              <Text style={[styles.navIcon, tab === 'personalized' ? styles.navIconActive : null]}>🚗</Text>
-              <Text style={[styles.navText, tab === 'personalized' ? styles.navTextActive : null]}>My Vehicles</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </ScrollView>
+
+      {/* Custom Bottom Nav Bar - FIXED AT BOTTOM */}
+      {!screen && (
+        <View style={styles.bottomNav}>
+          <TouchableOpacity onPress={() => setTab('home')} style={styles.navButton} activeOpacity={0.7}>
+            <Text style={[styles.navIcon, tab === 'home' ? styles.navIconActive : null]}>🏠</Text>
+            <Text style={[styles.navText, tab === 'home' ? styles.navTextActive : null]}>Home</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setTab('services')} style={styles.navButton} activeOpacity={0.7}>
+            <Text style={[styles.navIcon, tab === 'services' ? styles.navIconActive : null]}>🛠️</Text>
+            <Text style={[styles.navText, tab === 'services' ? styles.navTextActive : null]}>Services</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setTab('tracker')} style={styles.navButton} activeOpacity={0.7}>
+            <Text style={[styles.navIcon, tab === 'tracker' ? styles.navIconActive : null]}>📊</Text>
+            <Text style={[styles.navText, tab === 'tracker' ? styles.navTextActive : null]}>Vehicle Tracker</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setTab('personalized')} style={styles.navButton} activeOpacity={0.7}>
+            <Text style={[styles.navIcon, tab === 'personalized' ? styles.navIconActive : null]}>🚗</Text>
+            <Text style={[styles.navText, tab === 'personalized' ? styles.navTextActive : null]}>My Vehicles</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Side Drawer Menu Overlay */}
       {drawerOpen && (
@@ -1403,10 +1406,17 @@ const styles = StyleSheet.create({
   pageScrollContent: {
     flexGrow: 1,
   },
+  pageScrollWithBottomNav: {
+    paddingBottom: 88,
+  },
   mainContainer: {
     flex: 1,
   },
   bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     height: 72,
     backgroundColor: 'white',
     borderTopWidth: 1,
@@ -1420,11 +1430,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 10,
+    zIndex: 1000,
   },
   navButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
   },
   navIcon: {
     fontSize: 22,
@@ -1434,13 +1445,14 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   navText: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: '600',
     color: '#9CA3AF',
     marginTop: 2,
   },
   navTextActive: {
     color: '#2563EB',
+    fontWeight: '700',
   },
   drawerOverlay: {
     position: 'absolute',

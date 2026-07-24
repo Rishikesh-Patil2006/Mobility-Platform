@@ -925,15 +925,15 @@ export function VehicleAlertBadge({ docName, expiryDateStr, onPress }) {
 
 const badgeStyles = StyleSheet.create({
   badge: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 8,
     borderWidth: 1,
     alignSelf: 'flex-start',
     marginBottom: 6,
   },
   text: {
-    fontSize: 11,
+    fontSize: 9.5,
     fontWeight: '700',
   },
 });
@@ -1059,8 +1059,8 @@ const cardStyles = StyleSheet.create({
     borderRadius: 8,
   },
   statusTagText: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 9.5,
+    fontWeight: '700',
     color: '#10B981',
   },
   infoBlock: {
@@ -1072,8 +1072,8 @@ const cardStyles = StyleSheet.create({
     alignItems: 'center',
   },
   name: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#0F172A',
   },
   year: {
@@ -1082,7 +1082,7 @@ const cardStyles = StyleSheet.create({
     fontWeight: '600',
   },
   number: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#64748B',
     marginTop: 2,
     fontWeight: '500',
@@ -1101,7 +1101,7 @@ const cardStyles = StyleSheet.create({
     borderColor: '#EFF2F5',
   },
   specLabel: {
-    fontSize: 9,
+    fontSize: 9.5,
     color: '#94A3B8',
     textTransform: 'uppercase',
     fontWeight: '700',
@@ -2483,14 +2483,14 @@ export function PenaltyStatusChip({ status }) {
 
 const statusChipStyles = StyleSheet.create({
   chip: {
-    paddingVertical: 2,
-    paddingHorizontal: 8,
+    paddingVertical: 3.5,
+    paddingHorizontal: 8.5,
     borderRadius: 6,
     borderWidth: 1,
   },
   text: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 9.5,
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
 });

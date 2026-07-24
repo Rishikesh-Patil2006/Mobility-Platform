@@ -1,6 +1,6 @@
 // src/components/ServiceComponents.js
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -12,35 +12,24 @@ export const ServiceCategoryCard = React.memo(function ServiceCategoryCard({ cat
       style={styles.categoryCard}
       activeOpacity={0.9}
     >
-      <ImageBackground
-        source={cat.image}
-        style={styles.categoryImage}
-        imageStyle={styles.categoryImageStyle}
-      >
-        <View style={styles.gradientOverlay}>
-          {/* Top Vendor Count Badge */}
-          <View style={styles.vendorCountBadge}>
-            <Text style={styles.vendorCountText}>{cat.count || 0} vendors</Text>
-          </View>
-
-          {/* Bottom Title Area */}
-          <View style={styles.categoryInfoBlock}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <View style={[styles.miniEmojiCircle, { backgroundColor: cat.bg || '#EFF6FF' }]}>
-                <Text style={styles.miniEmoji}>{cat.emoji || '🔧'}</Text>
-              </View>
-              <Text style={styles.categoryName} numberOfLines={1}>
-                {cat.name}
-              </Text>
-            </View>
-            {cat.description ? (
-              <Text style={styles.categoryDesc} numberOfLines={2}>
-                {cat.description}
-              </Text>
-            ) : null}
-          </View>
+      {/* Clean Top Image Area with vendor-count badge */}
+      <View style={styles.categoryImageContainer}>
+        <Image
+          source={cat.image}
+          style={styles.categoryImage}
+          resizeMode="cover"
+        />
+        <View style={styles.vendorCountBadge}>
+          <Text style={styles.vendorCountText}>{cat.count || 0} vendors</Text>
         </View>
-      </ImageBackground>
+      </View>
+
+      {/* Service Name Below Image */}
+      <View style={styles.categoryInfoBlock}>
+        <Text style={styles.categoryName} numberOfLines={1}>
+          {cat.name}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 });
@@ -106,8 +95,8 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   sectionTitle: {
-    fontSize: 15,
-    fontWeight: '850',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#111827',
   },
   categoriesGrid: {
@@ -118,64 +107,54 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     width: width > 600 ? 180 : (width - 44) / 2,
-    height: 135,
+    backgroundColor: 'white',
     borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  categoryImageContainer: {
+    width: '100%',
+    height: 110,
+    position: 'relative',
+    overflow: 'hidden',
+    borderTopLeftRadius: 19,
+    borderTopRightRadius: 19,
+    backgroundColor: '#F3F4F6',
   },
   categoryImage: {
-    flex: 1,
     width: '100%',
     height: '100%',
   },
-  categoryImageStyle: {
-    resizeMode: 'cover',
-  },
-  gradientOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-    padding: 12,
-    justifyContent: 'space-between',
-  },
   vendorCountBadge: {
-    alignSelf: 'flex-end',
-    backgroundColor: 'rgba(255, 255, 255, 0.22)',
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: 'rgba(15, 23, 42, 0.65)',
     borderRadius: 8,
     paddingVertical: 3,
     paddingHorizontal: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.25)',
   },
   vendorCountText: {
     color: 'white',
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: 9.5,
+    fontWeight: '700',
   },
   categoryInfoBlock: {
-    gap: 4,
-  },
-  miniEmojiCircle: {
-    width: 24,
-    height: 24,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  miniEmoji: {
-    fontSize: 13,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: 'white',
   },
   categoryName: {
-    color: 'white',
-    fontSize: 13,
-    fontWeight: '800',
-    flex: 1,
-  },
-  categoryDesc: {
-    color: '#E2E8F0',
-    fontSize: 9,
-    fontWeight: '600',
-    lineHeight: 12,
+    color: '#111827',
+    fontSize: 13.5,
+    fontWeight: '700',
+    textAlign: 'left',
   },
   badgeContainer: {
     flexDirection: 'row',
@@ -194,8 +173,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   badgeText: {
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: 8.5,
+    fontWeight: '700',
   },
   enquireBtn: {
     backgroundColor: '#EF4444',

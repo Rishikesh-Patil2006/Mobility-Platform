@@ -22,7 +22,7 @@ export const computeLogsMileage = (logs) => {
     if (index > 0) {
       const prevEntry = sorted[index - 1];
       distance = Math.max(0, entry.odometer - prevEntry.odometer);
-      
+
       if (distance > 0 && entry.quantity > 0) {
         mileage = parseFloat((distance / entry.quantity).toFixed(2));
         costPerKm = parseFloat((entry.cost / distance).toFixed(2));

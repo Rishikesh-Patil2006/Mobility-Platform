@@ -210,7 +210,11 @@ export default function DashboardTab({
           <View style={styles.headerRightActions}>
             {/* Bell Notification */}
             <TouchableOpacity onPress={() => setNotifBoxOpen(true)} style={styles.iconButton} activeOpacity={0.7}>
-              <Text style={styles.iconEmoji}>🔔</Text>
+              <Image
+                source={require('../../../assets/notification_icon.png')}
+                style={styles.notifIconImage}
+                resizeMode="contain"
+              />
               {notifications.filter(n => n.status === 'Unread').length > 0 && (
                 <View style={styles.notifBadge}>
                   <Text style={styles.notifBadgeText}>
@@ -746,6 +750,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
   },
+  notifIconImage: {
+    width: '78%',
+    height: '78%',
+    alignSelf: 'center',
+  },
+  notifBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    backgroundColor: '#EF4444',
+    borderRadius: 9,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    borderWidth: 1.5,
+    borderColor: '#2563EB',
+  },
+  notifBadgeText: {
+    color: 'white',
+    fontSize: 9,
+    fontWeight: '900',
+  },
   notificationDot: {
     position: 'absolute',
     width: 8,
@@ -802,8 +830,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '800',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#111827',
   },
   viewAllLink: {
@@ -847,23 +875,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     left: 8,
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: 9.5,
+    fontWeight: '700',
     color: '#2563EB',
     backgroundColor: 'white',
-    paddingVertical: 2,
-    paddingHorizontal: 6,
+    paddingVertical: 2.5,
+    paddingHorizontal: 6.5,
     borderRadius: 6,
     overflow: 'hidden',
     zIndex: 10,
   },
   vehicleName: {
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '700',
     color: '#111827',
   },
   vehicleNumber: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#6B7280',
     marginTop: 2,
     marginBottom: 8,
@@ -874,27 +902,27 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   tag: {
-    paddingVertical: 3,
-    paddingHorizontal: 7,
+    paddingVertical: 3.5,
+    paddingHorizontal: 7.5,
     borderRadius: 6,
   },
   tagText: {
-    fontSize: 9,
+    fontSize: 9.5,
     fontWeight: '700',
   },
   vehicleAlertBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical: 4.5,
+    paddingHorizontal: 8.5,
     borderRadius: 8,
     borderWidth: 1,
     marginTop: 8,
     alignSelf: 'flex-start',
   },
   vehicleAlertBadgeText: {
-    fontSize: 9,
-    fontWeight: '800',
+    fontSize: 9.5,
+    fontWeight: '700',
   },
   addVehicleCard: {
     width: 140,
@@ -966,20 +994,20 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   docLabel: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: '700',
     textAlign: 'center',
   },
   docStatusBadge: {
-    paddingVertical: 2,
-    paddingHorizontal: 6,
+    paddingVertical: 2.5,
+    paddingHorizontal: 6.5,
     borderRadius: 6,
     marginTop: 6,
     alignSelf: 'center',
   },
   docStatusBadgeText: {
-    fontSize: 8,
-    fontWeight: '800',
+    fontSize: 8.5,
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
   servicesGrid: {
@@ -1022,20 +1050,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   serviceBadgeText: {
-    fontSize: 8,
-    fontWeight: '800',
+    fontSize: 8.5,
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
   serviceInfo: {
     padding: 10,
   },
   serviceLabel: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 13.5,
+    fontWeight: '700',
     color: '#111827',
   },
   serviceCount: {
-    fontSize: 10,
+    fontSize: 10.5,
     fontWeight: '600',
     marginTop: 2,
   },

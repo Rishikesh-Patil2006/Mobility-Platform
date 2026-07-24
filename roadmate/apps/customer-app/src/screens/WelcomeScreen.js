@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Easing, Dimensions, ScrollView } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -63,10 +63,10 @@ export default function WelcomeScreen({ navigation }) {
     };
 
     // Staggered float durations to feel organic
-    runFloat(floatAnim1, -8, 1500).start();
-    runFloat(floatAnim2, -6, 1750).start();
-    runFloat(floatAnim3, -7, 1400).start();
-    runFloat(floatAnim4, -9, 2000).start();
+    runFloat(floatAnim1, -6, 1500).start();
+    runFloat(floatAnim2, -5, 1750).start();
+    runFloat(floatAnim3, -6, 1400).start();
+    runFloat(floatAnim4, -7, 2000).start();
 
     // Pulse animation for the central route logo badge
     Animated.loop(
@@ -96,18 +96,41 @@ export default function WelcomeScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.scrollContainer}
+      contentContainerStyle={styles.scrollContentContainer}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.topSection}>
-        {/* Floating Cards Canvas */}
-        <View style={styles.canvasContainer}>
+        {/* Central Pulsing Route Badge Header */}
+        <Animated.View style={[styles.pulseLogoWrapper, { transform: [{ scale: pulseScale }] }]}>
+          <View style={styles.centerLogoCircle}>
+            <View style={styles.routeIconLineContainer}>
+              <View style={styles.routeCircleOuter} />
+              <View style={styles.routeLineHorizontal} />
+              <View style={styles.routeCircleInner} />
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Branding Typography */}
+        <Text style={styles.h1}>
+          Manage Your Vehicle {'\n'}
+          <Text style={styles.highlightText}>Smarter</Text>
+        </Text>
+
+        <Text style={styles.paragraph}>
+          All your vehicle documents, nearby services, and navigation tools in one platform.
+        </Text>
+
+        {/* 2x2 Feature Cards Grid */}
+        <View style={styles.featureGrid}>
           {/* Card 1: RC Book (Top Left) */}
           <Animated.View style={[
-            styles.floatingCard, 
+            styles.featureCard, 
             { 
               backgroundColor: '#EFF6FF', 
               borderColor: '#DBEAFE', 
-              top: 10, 
-              left: 20,
               transform: [{ translateY: floatAnim1 }]
             }
           ]}>
@@ -119,12 +142,10 @@ export default function WelcomeScreen({ navigation }) {
 
           {/* Card 2: Services (Top Right) */}
           <Animated.View style={[
-            styles.floatingCard, 
+            styles.featureCard, 
             { 
               backgroundColor: '#F0FDF4', 
               borderColor: '#BBF7D0', 
-              top: 25, 
-              right: 20,
               transform: [{ translateY: floatAnim2 }]
             }
           ]}>
@@ -136,12 +157,10 @@ export default function WelcomeScreen({ navigation }) {
 
           {/* Card 3: Vehicle (Bottom Left) */}
           <Animated.View style={[
-            styles.floatingCard, 
+            styles.featureCard, 
             { 
               backgroundColor: '#FFF7ED', 
               borderColor: '#FED7AA', 
-              bottom: 25, 
-              left: 25,
               transform: [{ translateY: floatAnim3 }]
             }
           ]}>
@@ -153,12 +172,10 @@ export default function WelcomeScreen({ navigation }) {
 
           {/* Card 4: Navigate (Bottom Right) */}
           <Animated.View style={[
-            styles.floatingCard, 
+            styles.featureCard, 
             { 
               backgroundColor: '#FDF4FF', 
               borderColor: '#E9D5FF', 
-              bottom: 10, 
-              right: 25,
               transform: [{ translateY: floatAnim4 }]
             }
           ]}>
@@ -167,29 +184,7 @@ export default function WelcomeScreen({ navigation }) {
             </View>
             <Text style={[styles.cardLabel, { color: '#9333EA' }]}>Navigate</Text>
           </Animated.View>
-
-          {/* Central Pulsing Route Badge */}
-          <Animated.View style={[styles.pulseLogoWrapper, { transform: [{ scale: pulseScale }] }]}>
-            <View style={styles.centerLogoCircle}>
-              {/* Simple route path logo drawn using small views */}
-              <View style={styles.routeIconLineContainer}>
-                <View style={styles.routeCircleOuter} />
-                <View style={styles.routeLineHorizontal} />
-                <View style={styles.routeCircleInner} />
-              </View>
-            </View>
-          </Animated.View>
         </View>
-
-        {/* Branding Typography */}
-        <Text style={styles.h1}>
-          Manage Your Vehicle {'\n'}
-          <Text style={styles.highlightText}>Smarter</Text>
-        </Text>
-
-        <Text style={styles.paragraph}>
-          All your vehicle documents, nearby services, and navigation tools in one platform.
-        </Text>
 
         {/* Benefits Grid */}
         <View style={styles.benefitsGrid}>
@@ -224,59 +219,29 @@ export default function WelcomeScreen({ navigation }) {
           By continuing, you agree to our Terms & Privacy Policy
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  scrollContentContainer: {
+    flexGrow: 1,
     paddingHorizontal: 24,
+    paddingTop: 48,
+    paddingBottom: 36,
+    justifyContent: 'space-between',
   },
   topSection: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 48,
-  },
-  canvasContainer: {
-    width: 270,
-    height: 220,
-    position: 'relative',
-    marginBottom: 20,
-  },
-  floatingCard: {
-    position: 'absolute',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 10,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    width: 90,
-    // Soft drop shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  cardIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  cardLabel: {
-    fontSize: 12,
-    fontWeight: '700',
+    width: '100%',
   },
   pulseLogoWrapper: {
-    position: 'absolute',
-    top: 78,
-    left: 103,
+    marginBottom: 20,
+    alignItems: 'center',
   },
   centerLogoCircle: {
     width: 64,
@@ -341,9 +306,42 @@ const styles = StyleSheet.create({
     marginTop: 10,
     lineHeight: 20,
   },
+  featureGrid: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginVertical: 24,
+  },
+  featureCard: {
+    width: '48%',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 14,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  cardIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  cardLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
   benefitsGrid: {
     width: '100%',
-    marginTop: 24,
+    marginBottom: 28,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -358,7 +356,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    width: '47%',
+    width: '48%',
   },
   checkIcon: {
     width: 16,
@@ -380,7 +378,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   bottomSection: {
-    paddingBottom: 36,
+    width: '100%',
+    marginTop: 12,
     gap: 12,
   },
   googleButton: {

@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
 
   // Scroll
   scroll: { flex: 1 },
-  scrollPadding: { padding: 20, paddingBottom: 40 },
+  scrollPadding: { padding: 20, paddingBottom: 88 },
 
   // Overview card
   overviewCard: {
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   overviewBadgeText: { fontSize: 26 },
 
   // Section heading
-  sectionHeading: { fontSize: 13, fontWeight: '800', color: '#475569', letterSpacing: 0.3, marginBottom: 14 },
+  sectionHeading: { fontSize: 16, fontWeight: '700', color: '#475569', letterSpacing: 0.3, marginBottom: 14 },
 
   // Hub grid
   hubGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 },

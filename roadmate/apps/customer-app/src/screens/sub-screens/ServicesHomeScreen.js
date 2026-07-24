@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   scrollPadding: {
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 32,
+    paddingBottom: 88,
   },
 
   sectionContainer: {
@@ -259,17 +259,17 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '850',
+    fontSize: 17,
+    fontWeight: '700',
     color: '#111827',
   },
   sectionCountBadge: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 9.5,
+    fontWeight: '700',
     color: 'white',
     backgroundColor: '#EF4444',
-    paddingVertical: 2,
-    paddingHorizontal: 6,
+    paddingVertical: 2.5,
+    paddingHorizontal: 6.5,
     borderRadius: 10,
   },
   savedScrollContainer: {
@@ -313,12 +313,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   savedCardName: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 13.5,
+    fontWeight: '700',
     color: '#111827',
   },
   savedCardCat: {
-    fontSize: 10,
+    fontSize: 11.5,
     color: '#9CA3AF',
     fontWeight: '600',
     marginTop: 2,
@@ -329,12 +329,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   savedCardRating: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 10.5,
+    fontWeight: '700',
     color: '#111827',
   },
   savedCardDist: {
-    fontSize: 10,
+    fontSize: 10.5,
     color: '#6B7280',
     marginLeft: 4,
     fontWeight: '600',
